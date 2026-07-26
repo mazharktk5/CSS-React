@@ -1,0 +1,1510 @@
+================================================================================
+              ES6+ ESSENTIALS FOR REACT DEVELOPERS
+         Everything You Need Before Writing React Code
+================================================================================
+
+ES6 (ECMAScript 2015) and later versions introduced massive improvements
+to JavaScript. React code is written in modern JavaScript, so understanding
+these features is not optional — you will see them in EVERY React file.
+
+This guide covers only what you WILL use in React, explained simply.
+
+TOPICS COVERED:
+  1.  var vs let vs const
+  2.  Arrow Functions
+  3.  Template Literals
+  4.  Destructuring — Arrays
+  5.  Destructuring — Objects
+  6.  Spread Operator (...)
+  7.  Rest Parameters (...)
+  8.  Default Parameters
+  9.  Shorthand Object Properties
+  10. Computed Property Names
+  11. Array Methods — map()
+  12. Array Methods — filter()
+  13. Array Methods — find() & findIndex()
+  14. Array Methods — some() & every()
+  15. Array Methods — reduce()
+  16. Ternary Operator
+  17. Short-Circuit Evaluation (&& and ||)
+  18. Optional Chaining (?.)
+  19. Nullish Coalescing (??)
+  20. Modules — import & export
+  21. Promises & async/await (intro)
+
+================================================================================
+1. var vs let vs const
+================================================================================
+
+Before ES6, JavaScript only had var. ES6 introduced let and const.
+In React, you will almost NEVER use var. Here's why.
+
+─────────────────────────────────
+var — The Old Way (AVOID)
+─────────────────────────────────
+
+Problems with var:
+  1. var is FUNCTION scoped (not block scoped)
+  2. var can be re-declared (confusing bugs)
+  3. var is hoisted in a confusing way
+
+    if (true) {
+      var name = "Alice";
+    }
+    console.log(name);   // "Alice" ← leaks outside the if block!
+
+    var x = 1;
+    var x = 2;           // No error! Silently overwrites.
+    console.log(x);      // 2
+
+─────────────────────────────────
+let — For Values That Change
+─────────────────────────────────
+
+  let is BLOCK scoped. It stays inside the { } it was declared in.
+  let can be reassigned, but NOT re-declared in the same scope.
+
+    let count = 0;
+    count = 1;           // ✅ reassignment is fine
+    let count = 2;       // ❌ SyntaxError: already declared
+
+    if (true) {
+      let city = "London";
+    }
+    console.log(city);   // ❌ ReferenceError: city is not defined (block scoped!)
+
+  USE let when: the value will CHANGE (loop counters, toggles, etc.)
+
+─────────────────────────────────
+const — For Values That Don't Change
+─────────────────────────────────
+
+  const is also BLOCK scoped. But it CANNOT be reassigned after declaration.
+  You MUST give it a value when you declare it.
+
+    const PI = 3.14;
+    PI = 3;              // ❌ TypeError: Assignment to constant variable
+
+    const name = "Alice";
+    name = "Bob";        // ❌ Error!
+
+  USE const when: the value will NOT change (most things in React).
+
+⚠️  IMPORTANT — const with objects and arrays:
+  const prevents REASSIGNMENT, but NOT mutation of the object's contents.
+
+    const user = { name: "Alice", age: 20 };
+    user.age = 21;                   // ✅ This works! (mutating the object)
+    user = { name: "Bob" };          // ❌ This fails! (reassignment)
+
+    const fruits = ["Apple", "Banana"];
+    fruits.push("Cherry");           // ✅ This works! (mutating the array)
+    fruits = ["Mango"];              // ❌ This fails! (reassignment)
+
+─────────────────────────────────
+RULE OF THUMB FOR REACT:
+─────────────────────────────────
+
+  ✅ Use const by default (almost everything in React)
+  ✅ Use let only when you KNOW the value will be reassigned
+  ❌ Never use var
+
+  ┌──────────┬───────────────┬─────────────┬──────────────┬──────────────┐
+  │          │ Re-declare?   │ Reassign?   │ Scope        │ Use in React?│
+  ├──────────┼───────────────┼─────────────┼──────────────┼──────────────┤
+  │ var      │ ✅ Yes        │ ✅ Yes      │ Function     │ ❌ Avoid     │
+  │ let      │ ❌ No         │ ✅ Yes      │ Block        │ ✅ Sometimes │
+  │ const    │ ❌ No         │ ❌ No       │ Block        │ ✅ Always    │
+  └──────────┴───────────────┴─────────────┴──────────────┴──────────────┘
+
+================================================================================
+2. ARROW FUNCTIONS
+================================================================================
+
+Arrow functions are a shorter, cleaner way to write functions.
+You will see arrow functions in EVERY React file. Master this.
+
+─────────────────────────────────
+TRADITIONAL FUNCTION (ES5)
+─────────────────────────────────
+
+    function greet(name) {
+      return "Hello, " + name;
+    }
+
+─────────────────────────────────
+ARROW FUNCTION (ES6)
+─────────────────────────────────
+
+    const greet = (name) => {
+      return "Hello, " + name;
+    };
+
+─────────────────────────────────
+SHORTHAND — Single expression (implicit return)
+─────────────────────────────────
+
+  When the function body is a SINGLE expression, you can:
+  - Remove the curly braces { }
+  - Remove the return keyword
+  - It returns automatically
+
+    const greet = (name) => "Hello, " + name;
+
+  More examples:
+
+    const double = (n) => n * 2;
+    const square = (n) => n * n;
+    const add = (a, b) => a + b;
+    const isAdult = (age) => age >= 18;
+
+─────────────────────────────────
+SHORTHAND — Single parameter
+─────────────────────────────────
+
+  When there's only ONE parameter, you can remove the parentheses:
+
+    const double = n => n * 2;        // ✅ clean
+    const greet = name => "Hi " + name;
+
+  With ZERO parameters, you need empty parentheses:
+
+    const sayHello = () => "Hello!";
+
+  With TWO or more parameters, parentheses are required:
+
+    const add = (a, b) => a + b;
+
+─────────────────────────────────
+RETURNING AN OBJECT (special case)
+─────────────────────────────────
+
+  When implicitly returning an OBJECT, wrap it in parentheses to avoid
+  confusion with the function body's { }:
+
+    // ❌ WRONG — JavaScript thinks { } is the function body
+    const getUser = () => { name: "Alice" };
+
+    // ✅ CORRECT — wrap the object in ( )
+    const getUser = () => ({ name: "Alice", age: 20 });
+
+─────────────────────────────────
+ARROW FUNCTIONS IN REACT
+─────────────────────────────────
+
+  React components (arrow style):
+
+    const Greeting = () => {
+      return <h1>Hello!</h1>;
+    };
+
+    // Or shorter:
+    const Greeting = () => <h1>Hello!</h1>;
+
+  Event handlers:
+
+    <button onClick={() => console.log("Clicked!")}>Click</button>
+    <button onClick={() => setCount(count + 1)}>+1</button>
+
+  Inside map():
+
+    students.map((student) => <StudentCard key={student.id} {...student} />)
+
+─────────────────────────────────
+this KEYWORD DIFFERENCE (bonus knowledge)
+─────────────────────────────────
+
+  Regular functions have their own this.
+  Arrow functions inherit this from the surrounding scope.
+  In React with functional components, this rarely matters.
+
+  COMPARISON TABLE:
+  ┌──────────────────────────────┬─────────────────────────────────────────┐
+  │ Regular Function             │ Arrow Function                          │
+  ├──────────────────────────────┼─────────────────────────────────────────┤
+  │ function name() { }          │ const name = () => { }                  │
+  │ Has its own this             │ Inherits this from parent               │
+  │ Verbose                      │ Concise                                 │
+  │ Hoisted (can be called       │ Not hoisted (must be defined first)     │
+  │ before declaration)          │                                         │
+  └──────────────────────────────┴─────────────────────────────────────────┘
+
+================================================================================
+3. TEMPLATE LITERALS
+================================================================================
+
+Template literals let you embed expressions directly inside strings.
+Use backticks (`) instead of quotes.
+
+─────────────────────────────────
+OLD WAY — String concatenation
+─────────────────────────────────
+
+    const name = "Alice";
+    const age = 20;
+    const message = "Hello, " + name + "! You are " + age + " years old.";
+
+─────────────────────────────────
+NEW WAY — Template literals
+─────────────────────────────────
+
+    const message = `Hello, ${name}! You are ${age} years old.`;
+    
+
+Much cleaner! Use ${ } to embed any JavaScript expression.
+
+MORE EXAMPLES:
+
+    const price = 25;
+    const tax = 0.1;
+
+    console.log(`Price: $${price}`);
+    console.log(`With tax: $${price + price * tax}`);
+    console.log(`Is adult: ${age >= 18 ? "Yes" : "No"}`);
+
+MULTI-LINE STRINGS:
+
+    // Old way (messy):
+    const html = "<div>\n  <h1>Hello</h1>\n  <p>World</p>\n</div>";
+
+    // Template literal (clean):
+    const html = `
+      <div>
+        <h1>Hello</h1>
+        <p>World</p>
+      </div>
+    `;
+
+IN REACT — dynamic class names, styles, messages:
+
+    const isActive = true;
+    <div className={`card ${isActive ? "active" : ""}`}>...</div>
+
+    const userName = "Alice";
+    <p>{`Welcome back, ${userName}!`}</p>
+
+    // Setting dynamic styles:
+    const color = "red";
+    <p style={{ color: `${color}` }}>Error message</p>
+
+================================================================================
+4. DESTRUCTURING — ARRAYS
+================================================================================
+
+Destructuring lets you UNPACK values from arrays and objects into variables.
+
+─────────────────────────────────
+WITHOUT DESTRUCTURING (old way)
+─────────────────────────────────
+
+    const colors = ["red", "green", "blue"];
+
+    const first = colors[0];    // "red"
+    const second = colors[1];   // "green"
+    const third = colors[2];    // "blue"
+
+─────────────────────────────────
+WITH ARRAY DESTRUCTURING (new way)
+─────────────────────────────────
+
+    const colors = ["red", "green", "blue"];
+
+    const [r, second, third] = colors;
+
+    console.log(first);    // "red"
+    console.log(second);   // "green"
+    console.log(third);    // "blue"
+
+SKIPPING ELEMENTS:
+
+    const [first, , third] = colors;    // skip "green"
+    console.log(first);   // "red"
+    console.log(third);   // "blue"
+
+DEFAULT VALUES:
+
+    const [a, b,= "yellow"] = ["red", ];
+    console.log(b);   // "yellow" (default, since no 3rd element)
+
+SWAPPING VARIABLES:
+
+    let x = 1;
+    let y = 2;
+
+    [x, y] = [y, x];   // swap!
+
+    console.log(x);   // 2
+    console.log(y);   // 1
+
+─────────────────────────────────
+IN REACT — useState uses array destructuring!
+─────────────────────────────────
+
+  This is why useState looks the way it does:
+
+    // useState returns an array: [currentValue, setterFunction]
+    const [count, setCount] = useState(0);
+
+    // Without destructuring it would be:
+    const stateArray = useState(0);
+    const count = stateArray[0];
+    const setCount = stateArray[1];
+
+    // Destructuring makes it clean!
+    const [count, setCount] = useState(0);
+
+================================================================================
+5. DESTRUCTURING — OBJECTS
+================================================================================
+
+Object destructuring extracts properties from objects into variables.
+This is used CONSTANTLY in React, especially with props.
+
+─────────────────────────────────
+WITHOUT DESTRUCTURING
+─────────────────────────────────
+
+    const student = { name: "Alice",
+                       age: 20, 
+                       grade: "A" 
+                       };
+
+    const name = student.name;
+    const age = student.age;
+    const grade = student.grade;
+
+
+─────────────────────────────────
+WITH OBJECT DESTRUCTURING
+─────────────────────────────────
+
+    const { name, age, grade } = student;
+
+    console.log(name);   // "Alice"
+    console.log(age);    // 20
+    console.log(grade);  // "A"
+
+RENAMING VARIABLES (using : ):
+
+    const { name: studentName, age: studentAge } = student;
+
+    console.log(studentName);   // "Alice"
+    console.log(studentAge);    // 20
+
+DEFAULT VALUES:
+
+    const { name, role = "Student" } = student;
+    console.log(role);   // "Student" (default, since no role property)
+
+NESTED OBJECT DESTRUCTURING:
+
+    const user = {
+      name: "Alice",
+      address: {
+        city: "London",
+        country: "UK",
+      },
+    };
+
+    const { name, address: { city, country } } = user;
+
+    console.log(name);     // "Alice"
+    console.log(city);     // "London"
+    console.log(country);  // "UK"
+
+─────────────────────────────────
+IN REACT — Props destructuring
+─────────────────────────────────
+
+  WITHOUT destructuring:
+
+{
+  name: "
+}
+
+
+    function StudentCard(props) {
+
+      return <h2>{props.name} — Age: {props.age}</h2>;
+    }
+
+  WITH destructuring (standard React style):
+
+    function StudentCard({ name, age, grade = "N/A" }) {
+
+      return <h2>{name} — Age: {age} — Grade: {grade}</h2>;
+    }
+
+  In an event handler:
+
+    function handleChange(event) {
+      const { name, value, checked } = event.target;
+      // instead of event.target.name, event.target.value, etc.
+    }
+
+================================================================================
+6. SPREAD OPERATOR (...)
+================================================================================
+
+The spread operator (...) EXPANDS an array or object into individual elements.
+Think of it as "unpacking" a box and spreading its contents out.
+
+─────────────────────────────────
+SPREAD WITH ARRAYS
+─────────────────────────────────
+
+COMBINING ARRAYS:
+
+    const fruits = ["Apple", "Banana"];
+    const moreFruits = ["Cherry", "Mango"];
+
+    const allFruits = [...fruits, ...moreFruits];
+    console.log(allFruits);   // ["Apple", "Banana", "Cherry", "Mango"]
+
+ADDING ELEMENTS:
+
+    const original = [1, 2, 3];
+
+    const withFront = [0, ...original];      // [0, 1, 2, 3]
+    const withEnd = [...original, 4];        // [1, 2, 3, 4]
+    const withBoth = [0, ...original, 4];    // [0, 1, 2, 3, 4]
+
+COPYING AN ARRAY (shallow copy):
+
+    const original = [1, 2, 3];
+    const copy = [...original];    // new array, not a reference!
+
+    copy.push(4);
+    console.log(original);  // [1, 2, 3]  ← not affected
+    console.log(copy);      // [1, 2, 3, 4]
+
+─────────────────────────────────
+SPREAD WITH OBJECTS
+─────────────────────────────────
+
+COPYING AN OBJECT:
+
+    const user = { name: "Alice", age: 20 };
+    const copy = { ...user };    // shallow copy
+
+MERGING OBJECTS:
+
+    const defaults = { theme: "light", language: "en" };
+    const userPrefs = { theme: "dark" };
+
+    const settings = { ...defaults, ...userPrefs };
+    console.log(settings);
+    // { theme: "dark", language: "en" }
+    // userPrefs.theme OVERRIDES defaults.theme
+
+UPDATING ONE PROPERTY (crucial in React state):
+
+    const user = { name: "Alice", age: 20, city: "London" };
+
+    // Update only the age:
+    const updated = { ...user, age: 21 };
+    // { name: "Alice", age: 21, city: "London" }
+
+─────────────────────────────────
+IN REACT — Where you'll use spread constantly
+─────────────────────────────────
+
+  1. Updating object state safely:
+
+       const [user, setUser] = useState({ name: "Alice", age: 20 });
+
+       // Change only age:
+       setUser({ ...user, age: 21 });
+
+  2. Adding to array state:
+
+       const [items, setItems] = useState([]);
+
+       // Add a new item:
+       setItems([...items, newItem]);
+
+  3. Passing all object properties as props:
+
+       const student = { id: 1, name: "Alice", age: 20 };
+
+       <StudentCard {...student} />
+       // Same as: <StudentCard id={1} name="Alice" age={20} />
+
+  4. Copying arrays before modifying (to avoid mutations):
+
+       const newItems = [...items];
+       newItems.splice(index, 1);
+       setItems(newItems);
+
+================================================================================
+7. REST PARAMETERS (...) 
+================================================================================
+
+Rest parameters look the same as spread (...) but do the OPPOSITE.
+Instead of expanding, rest COLLECTS multiple values into an array.
+
+  Spread = one → many (expand)
+
+  Rest   = many → one (collect)
+
+─────────────────────────────────
+REST IN FUNCTION PARAMETERS
+─────────────────────────────────
+
+    function sum(...numbers) {
+      return numbers.reduce((total, n) => total + n, 0);
+    }
+
+    console.log(sum(1, 2, 3));        // 6
+    console.log(sum(1, 2, 3, 4, 5)); // 15
+
+    // numbers is [1, 2, 3] — an array of all passed arguments
+
+COMBINING NORMAL AND REST:
+
+    function greet(greeting, ...names) {
+      return names.map(name => `${greeting}, ${name}!`);
+    }
+
+    greet("Hello", "Alice", "Bob", "Charlie");
+    // ["Hello, Alice!", "Hello, Bob!", "Hello, Charlie!"]
+
+─────────────────────────────────
+REST IN DESTRUCTURING
+─────────────────────────────────
+
+  Collect the REMAINING elements:
+
+    const [first, second, ...rest] = [1, 2, 3, 4, 5];
+
+    console.log(first);   // 1
+    console.log(second);  // 2
+    console.log(rest);    // [3, 4, 5]
+
+  With objects:
+
+    const { name, age, ...otherProps } = { name: "Alice", age: 20, city: "London", role: "Admin" };
+
+    console.log(name);        // "Alice"
+    console.log(age);         // 20
+    console.log(otherProps);  // { city: "London", role: "Admin" }
+
+─────────────────────────────────
+IN REACT — rest props pattern
+─────────────────────────────────
+
+    function Button({ label, onClick, ...rest }) {
+      // label and onClick are extracted
+      // ...rest catches className, disabled, type, style, etc.
+
+      return (
+        <button onClick={onClick} {...rest}>
+          {label}
+        </button>
+      );
+    }
+
+    <Button label="Submit" onClick={handleSubmit} className="primary" disabled={false} />
+
+================================================================================
+8. DEFAULT PARAMETERS
+================================================================================
+
+Default parameters let you set fallback values for function arguments.
+If the argument is not passed (or is undefined), the default is used.
+
+─────────────────────────────────
+OLD WAY (without default parameters)
+─────────────────────────────────
+
+    function greet(name) {
+      name = name || "Stranger";
+      return "Hello, " + name;
+    }
+
+─────────────────────────────────
+NEW WAY (with default parameters)
+─────────────────────────────────
+
+    function greet(name = "Stranger") {
+      return `Hello, ${name}!`;
+    }
+
+    greet("Alice");    // "Hello, Alice!"
+    greet();           // "Hello, Stranger!"
+    greet(undefined);  // "Hello, Stranger!"
+
+MORE EXAMPLES:
+
+    function createUser(name, role = "Student", age = 18) {
+      return { name, role, age };
+    }
+
+    createUser("Alice");
+    // { name: "Alice", role: "Student", age: 18 }
+
+    createUser("Bob", "Admin", 25);
+    // { name: "Bob", role: "Admin", age: 25 }
+
+IN REACT — default props in components:
+
+    function StudentCard({ name, role = "Student", isActive = true }) {
+      return (
+        <div>
+          <h2>{name}</h2>
+          <p>Role: {role}</p>
+          <p>Status: {isActive ? "Active" : "Inactive"}</p>
+        </div>
+      );
+    }
+
+    <StudentCard name="Alice" />
+    // Role: Student (default)
+    // Status: Active (default)
+
+================================================================================
+9. SHORTHAND OBJECT PROPERTIES
+================================================================================
+
+When a variable name matches the property name you want in an object,
+you don't need to repeat it.
+
+─────────────────────────────────
+OLD WAY
+─────────────────────────────────
+
+    const name = "Alice";
+    const age = 20;
+    const city = "London";
+
+    const user = {
+      name: name,
+      age: age,
+      city: city,
+    };
+
+─────────────────────────────────
+SHORTHAND (ES6)
+─────────────────────────────────
+
+    const user = { name, age, city };
+    // Exactly the same as: { name: name, age: age, city: city }
+
+METHODS IN OBJECTS — shorthand:
+
+    // Old way:
+    const obj = {
+      greet: function() {
+        return "Hello!";
+      }
+    };
+
+    // Shorthand:
+    const obj = {
+      greet() {
+        return "Hello!";
+      }
+    };
+
+IN REACT — building state objects and returning data:
+
+    function handleSubmit() {
+      const name = nameInput.value;
+      const email = emailInput.value;
+      const age = ageInput.value;
+
+      // Old:
+      const userData = { name: name, email: email, age: age };
+
+      // Shorthand:
+      const userData = { name, email, age };
+
+      console.log(userData);
+    }
+
+================================================================================
+10. COMPUTED PROPERTY NAMES
+================================================================================
+
+Computed property names let you use a DYNAMIC variable as the key in an object.
+Wrap the variable in [ ].
+
+    const field = "name";
+    const value = "Alice";
+
+    // Old way (can't do this):
+    const obj = { field: value };   // creates { field: "Alice" } — WRONG key!
+
+    // Computed property name:
+    const obj = { [field]: value };  // creates { name: "Alice" } ✅
+
+IN REACT — handling forms with one onChange for all fields:
+
+    const [formData, setFormData] = useState({
+      name: "",
+      email: "",
+      password: "",
+    });
+
+    function handleChange(event) {
+      const { name, value } = event.target;
+
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,   // ← computed property name!
+      }));
+    }
+
+    // Each input needs a name attribute matching the state key:
+    <input name="name"     value={formData.name}     onChange={handleChange} />
+    <input name="email"    value={formData.email}    onChange={handleChange} />
+    <input name="password" value={formData.password} onChange={handleChange} />
+
+    // When the "email" input changes:
+    // name = "email", value = "alice@test.com"
+    // setFormData({ ...prev, email: "alice@test.com" })
+    // One function handles ALL inputs!
+
+================================================================================
+11. ARRAY METHOD — map()
+================================================================================
+
+map() transforms every item in an array and returns a NEW array.
+It does NOT change the original array.
+
+SYNTAX:
+
+    const newArray = array.map((item) => expression);
+
+EXAMPLES:
+
+    const numbers = [1, 2, 3, 4, 5];
+
+    const doubled = numbers.map((n) => n * 2);
+    console.log(doubled);   // [2, 4, 6, 8, 10]
+    console.log(numbers);   // [1, 2, 3, 4, 5] ← original unchanged
+
+    const names = ["alice", "bob", "charlie"];
+    const upper = names.map((name) => name.toUpperCase());
+    // ["ALICE", "BOB", "CHARLIE"]
+
+    const prices = [10, 20, 30];
+    const withTax = prices.map((price) => price * 1.1);
+    // [11, 22, 33]
+
+MAP WITH INDEX (second parameter):
+
+    const fruits = ["Apple", "Banana", "Cherry"];
+
+    fruits.map((fruit, index) => {
+      console.log(`${index + 1}. ${fruit}`);
+    });
+    // 1. Apple
+    // 2. Banana
+    // 3. Cherry
+
+MAP WITH OBJECTS:
+
+    const students = [
+      { id: 1, name: "Alice", score: 90 },
+      { id: 2, name: "Bob", score: 75 },
+      { id: 3, name: "Charlie", score: 85 },
+    ];
+
+    // Get just the names:
+    const names = students.map((s) => s.name);
+    // ["Alice", "Bob", "Charlie"]
+
+    // Transform objects:
+    const withGrade = students.map((s) => ({
+      ...s,
+      grade: s.score >= 90 ? "A" : s.score >= 80 ? "B" : "C",
+    }));
+
+IN REACT — rendering lists:
+
+    const items = ["React", "Vue", "Angular"];
+
+    <ul>
+      {items.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+
+    // With objects:
+    {students.map((student) => (
+      <StudentCard key={student.id} {...student} />
+    ))}
+
+================================================================================
+12. ARRAY METHOD — filter()
+================================================================================
+
+filter() returns a NEW array containing only items that PASS a test.
+The test is a function that returns true (keep) or false (remove).
+
+SYNTAX:
+
+    const filtered = array.filter((item) => condition);
+
+EXAMPLES:
+
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8];
+
+    const evens = numbers.filter((n) => n % 2 === 0);
+    console.log(evens);   // [2, 4, 6, 8]
+
+    const odds = numbers.filter((n) => n % 2 !== 0);
+    console.log(odds);    // [1, 3, 5, 7]
+
+    const bigNumbers = numbers.filter((n) => n > 4);
+    console.log(bigNumbers);  // [5, 6, 7, 8]
+
+FILTER WITH OBJECTS:
+
+    const students = [
+      { id: 1, name: "Alice", grade: "A", isEnrolled: true },
+      { id: 2, name: "Bob",   grade: "B", isEnrolled: false },
+      { id: 3, name: "Charlie", grade: "A", isEnrolled: true },
+    ];
+
+    // Only enrolled students:
+    const enrolled = students.filter((s) => s.isEnrolled);
+    // [Alice, Charlie]
+
+    // Only "A" grade students:
+    const topStudents = students.filter((s) => s.grade === "A");
+    // [Alice, Charlie]
+
+    // Filter by name (search):
+    const searchQuery = "al";
+    const results = students.filter((s) =>
+      s.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    // [Alice]
+
+CHAINING filter() AND map():
+
+    // Get names of enrolled A-grade students:
+    const names = students
+      .filter((s) => s.isEnrolled && s.grade === "A")
+      .map((s) => s.name);
+    // ["Alice", "Charlie"]
+
+IN REACT — removing from state, search filtering:
+
+    const [students, setStudents] = useState([...]);
+
+    // Remove a student by id:
+    function removeStudent(id) {
+      setStudents((prev) => prev.filter((s) => s.id !== id));
+    }
+
+    // Search feature:
+    const [query, setQuery] = useState("");
+    const filtered = students.filter((s) =>
+      s.name.toLowerCase().includes(query.toLowerCase())
+    );
+
+    // Render filtered results:
+    {filtered.map((s) => <StudentCard key={s.id} {...s} />)}
+
+================================================================================
+13. ARRAY METHODS — find() & findIndex()
+================================================================================
+
+─────────────────────────────────
+find()
+─────────────────────────────────
+
+find() returns the FIRST ITEM that passes the test.
+Returns undefined if nothing is found.
+
+    const students = [
+      { id: 1, name: "Alice" },
+      { id: 2, name: "Bob" },
+      { id: 3, name: "Charlie" },
+    ];
+
+    const found = students.find((s) => s.id === 2);
+    console.log(found);   // { id: 2, name: "Bob" }
+
+    const notFound = students.find((s) => s.id === 99);
+    console.log(notFound);   // undefined
+
+    // filter returns an ARRAY. find returns ONE ITEM.
+    // Use find when you expect only one match.
+
+─────────────────────────────────
+findIndex()
+─────────────────────────────────
+
+findIndex() returns the INDEX of the first item that passes.
+Returns -1 if nothing is found.
+
+    const index = students.findIndex((s) => s.id === 2);
+    console.log(index);   // 1 (0-based index)
+
+IN REACT — finding and updating a specific item:
+
+    function updateStudent(id, newName) {
+      setStudents((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, name: newName } : s))
+      );
+    }
+    // finds the matching student and updates it, leaves others untouched
+
+================================================================================
+14. ARRAY METHODS — some() & every()
+================================================================================
+
+─────────────────────────────────
+some() — "Does AT LEAST ONE item pass?"
+─────────────────────────────────
+
+  Returns true if at least ONE item passes the test.
+  Returns false if NO items pass.
+
+    const numbers = [1, 2, 3, 4, 5];
+
+    numbers.some((n) => n > 4);    // true (5 passes)
+    numbers.some((n) => n > 10);   // false (none passes)
+
+    const students = [
+      { name: "Alice", hasPaid: true },
+      { name: "Bob",   hasPaid: false },
+    ];
+
+    const anyUnpaid = students.some((s) => !s.hasPaid);
+    // true → at least one student hasn't paid
+
+─────────────────────────────────
+every() — "Do ALL items pass?"
+─────────────────────────────────
+
+  Returns true only if EVERY item passes the test.
+
+    numbers.every((n) => n > 0);   // true (all positive)
+    numbers.every((n) => n > 3);   // false (1, 2, 3 fail)
+
+    const allPaid = students.every((s) => s.hasPaid);
+    // false → not all students have paid
+
+IN REACT — validation use case:
+
+    const [skills, setSkills] = useState(["React", "CSS"]);
+
+    const hasReact = skills.some((s) => s === "React");
+    // Shows a warning if React is not in the skills list
+
+================================================================================
+15. ARRAY METHOD — reduce()
+================================================================================
+
+reduce() processes an array and reduces it to a SINGLE VALUE.
+It's the most powerful (and most confusing) array method.
+
+SYNTAX:
+
+    array.reduce((accumulator, currentItem) => {
+      return newAccumulator;
+    }, initialValue);
+
+  accumulator → the running total / result (starts as initialValue)
+  currentItem → the current element being processed
+
+EXAMPLES:
+
+    const numbers = [1, 2, 3, 4, 5];
+
+    // Sum all numbers:
+    const sum = numbers.reduce((total, n) => total + n, 0);
+    console.log(sum);   // 15
+
+    // How it works step by step:
+    // Start: total = 0
+    // Step 1: total = 0 + 1 = 1
+    // Step 2: total = 1 + 2 = 3
+    // Step 3: total = 3 + 3 = 6
+    // Step 4: total = 6 + 4 = 10
+    // Step 5: total = 10 + 5 = 15
+
+    // Maximum value:
+    const max = numbers.reduce((max, n) => (n > max ? n : max), 0);
+    console.log(max);   // 5
+
+REDUCE WITH OBJECTS:
+
+    const cart = [
+      { name: "T-Shirt", price: 25, qty: 2 },
+      { name: "Shoes",   price: 60, qty: 1 },
+      { name: "Hat",     price: 15, qty: 3 },
+    ];
+
+    const totalPrice = cart.reduce((total, item) => {
+      return total + item.price * item.qty;
+    }, 0);
+
+    console.log(totalPrice);   // 25*2 + 60*1 + 15*3 = 50+60+45 = 155
+
+IN REACT — cart total, grouping, counting:
+
+    const total = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+    <p>Total: ${total}</p>
+
+================================================================================
+16. TERNARY OPERATOR
+================================================================================
+
+The ternary operator is a one-line if/else. It's used EVERYWHERE in React JSX.
+
+SYNTAX:
+
+    condition ? valueIfTrue : valueIfFalse
+
+─────────────────────────────────
+BASIC EXAMPLES
+─────────────────────────────────
+
+    const age = 20;
+
+    // Old if/else:
+    let status;
+    if (age >= 18) {
+      status = "Adult";
+    } else {
+      status = "Minor";
+    }
+
+    // Ternary:
+    const status = age >= 18 ? "Adult" : "Minor";
+
+    const score = 85;
+    const grade = score >= 90 ? "A" : score >= 80 ? "B" : score >= 70 ? "C" : "F";
+
+    const isLoggedIn = true;
+    const message = isLoggedIn ? "Welcome back!" : "Please log in";
+
+─────────────────────────────────
+IN REACT — conditional rendering
+─────────────────────────────────
+
+  You CANNOT use if/else directly inside JSX. Use ternary instead.
+
+    // ❌ WRONG (if/else not allowed in JSX):
+    return (
+      <div>
+        {if (isLoggedIn) { <Dashboard /> } else { <Login /> }}
+      </div>
+    );
+
+    // ✅ CORRECT (ternary):
+    return (
+      <div>
+        {isLoggedIn ? <Dashboard /> : <Login />}
+      </div>
+    );
+
+    // Conditional text:
+    <p>{isEnrolled ? "✅ Enrolled" : "❌ Not Enrolled"}</p>
+
+    // Conditional className:
+    <button className={isActive ? "btn-active" : "btn-inactive"}>
+      Click
+    </button>
+
+    // Conditional style:
+    <div style={{ color: score >= 90 ? "green" : "red" }}>
+      {score}
+    </div>
+
+================================================================================
+17. SHORT-CIRCUIT EVALUATION (&& and ||)
+================================================================================
+
+─────────────────────────────────
+&& (AND) — "Show only if true"
+─────────────────────────────────
+
+    A && B
+
+  If A is truthy → returns B (and B is shown)
+  If A is falsy  → returns A (and nothing is shown)
+
+    true  && "Hello"   // "Hello"
+    false && "Hello"   // false (nothing rendered)
+    0     && "Hello"   // 0     (careful!)
+
+IN REACT — conditionally show something (no else needed):
+
+    {isLoggedIn && <Dashboard />}
+    // Shows <Dashboard /> only if isLoggedIn is true
+    // Shows nothing if isLoggedIn is false
+
+    {errors.name && <p className="error">{errors.name}</p>}
+    // Shows error message only if it exists
+
+    {items.length > 0 && (
+      <ul>
+        {items.map(item => <li key={item.id}>{item.name}</li>)}
+      </ul>
+    )}
+    // Shows list only when there are items
+
+⚠️ GOTCHA: If the left side is 0 (the number), React renders "0" on screen!
+
+    {count && <p>Items: {count}</p>}
+    // If count is 0: renders "0" ← bug!
+
+    // Fix: use explicit boolean check:
+    {count > 0 && <p>Items: {count}</p>}
+    // Or: {!!count && <p>Items: {count}</p>}
+
+─────────────────────────────────
+|| (OR) — "Use default if falsy"
+─────────────────────────────────
+
+    A || B
+
+  If A is truthy → returns A
+  If A is falsy  → returns B (the fallback)
+
+    "Alice" || "Stranger"   // "Alice"
+    ""      || "Stranger"   // "Stranger"
+    null    || "Stranger"   // "Stranger"
+    0       || 100          // 100
+
+IN REACT — fallback values:
+
+    <h1>Hello, {name || "Stranger"}!</h1>
+    // Shows "Stranger" if name is empty/null/undefined
+
+    <p>{description || "No description provided."}</p>
+
+    const displayName = user.nickname || user.name || "Anonymous";
+
+================================================================================
+18. OPTIONAL CHAINING (?.)
+================================================================================
+
+Optional chaining safely accesses nested properties.
+If any part of the chain is null or undefined, it returns undefined
+INSTEAD of throwing an error.
+
+THE PROBLEM:
+
+    const user = null;
+
+    console.log(user.name);         // ❌ TypeError: Cannot read property 'name' of null
+    console.log(user?.name);        // ✅ undefined (no error!)
+
+NESTED PROPERTIES:
+
+    const user = {
+      name: "Alice",
+      address: {
+        city: "London",
+      },
+    };
+
+    console.log(user.address.city);       // "London"
+    console.log(user.phone.number);       // ❌ TypeError!
+    console.log(user.phone?.number);      // ✅ undefined
+
+    // Deep nesting:
+    console.log(user?.address?.city);     // "London"
+    console.log(user?.contact?.phone);    // undefined (no error)
+
+OPTIONAL CHAINING WITH METHODS:
+
+    const str = null;
+    console.log(str?.toUpperCase());   // undefined (not an error)
+    console.log(str?.split(","));      // undefined
+
+OPTIONAL CHAINING WITH ARRAYS:
+
+    const users = null;
+    console.log(users?.[0]);          // undefined (not an error)
+
+IN REACT — data from APIs that might be null:
+
+    // User might be null while data is loading:
+    <p>{user?.name}</p>
+    <p>{user?.address?.city}</p>
+    <img src={user?.avatar?.url} alt="avatar" />
+
+    // Calling optional methods:
+    {items?.map((item) => <li key={item.id}>{item.name}</li>)}
+
+================================================================================
+19. NULLISH COALESCING (??)
+================================================================================
+
+The ?? operator returns the RIGHT side only when the LEFT side is
+null or undefined (NOT for 0, false, or empty string "").
+
+THIS IS THE KEY DIFFERENCE from || (which treats all falsy as false):
+
+    null      ?? "default"   // "default"
+    undefined ?? "default"   // "default"
+    0         ?? "default"   // 0         ← 0 is NOT null/undefined!
+    ""        ?? "default"   // ""        ← "" is NOT null/undefined!
+    false     ?? "default"   // false     ← false is NOT null/undefined!
+
+COMPARE ?? vs ||:
+
+    0  || "default"    // "default" (treats 0 as falsy)
+    0  ?? "default"    // 0         (0 is not null/undefined)
+
+    "" || "default"    // "default" (treats "" as falsy)
+    "" ?? "default"    // ""        (empty string is not null/undefined)
+
+WHEN TO USE ?? vs ||:
+
+    Use ||  when you want all falsy values (0, "", false, null, undefined) to use the fallback
+    Use ??  when you ONLY want null/undefined to use the fallback (0 and "" are valid values)
+
+IN REACT — displaying scores, quantities, prices that could be 0:
+
+    // BUG: 0 score shows "No score" instead of 0
+    <p>Score: {score || "No score"}</p>
+    // If score is 0: shows "No score" ← wrong!
+
+    // CORRECT: only shows "No score" if score is null/undefined
+    <p>Score: {score ?? "No score"}</p>
+    // If score is 0: shows 0 ✅
+    // If score is null: shows "No score" ✅
+
+    // Price display:
+    <p>Price: ${price ?? "N/A"}</p>
+
+    // With optional chaining:
+    <p>{user?.age ?? "Age not provided"}</p>
+
+================================================================================
+20. MODULES — import & export (Review + More)
+================================================================================
+
+You covered this in Day 1, but here's a more complete reference.
+
+─────────────────────────────────
+NAMED EXPORTS & IMPORTS
+─────────────────────────────────
+
+    // math.js — multiple named exports
+    export const PI = 3.14159;
+    export const E  = 2.71828;
+
+    export function add(a, b) { return a + b; }
+    export function multiply(a, b) { return a * b; }
+
+    // app.js — named imports (must match exactly)
+    import { PI, add } from "./math";
+    import { PI as pi, add as addition } from "./math";   // with renaming
+
+─────────────────────────────────
+DEFAULT EXPORTS & IMPORTS
+─────────────────────────────────
+
+    // Button.jsx — one default export
+    export default function Button({ label }) {
+      return <button>{label}</button>;
+    }
+
+    // App.jsx — import with any name
+    import Button from "./Button";
+    import MyBtn from "./Button";   // renaming is fine
+
+─────────────────────────────────
+IMPORT EVERYTHING
+─────────────────────────────────
+
+    import * as MathUtils from "./math";
+
+    MathUtils.add(2, 3);     // 5
+    MathUtils.PI;            // 3.14159
+    
+─────────────────────────────────
+COMMON REACT IMPORTS YOU'LL SEE EVERY DAY
+─────────────────────────────────
+
+    import React from "react";                          // React itself (React 17 and below)
+    import { useState } from "react";                   // state hook
+    import { useEffect } from "react";                  // effect hook
+    import { useState, useEffect } from "react";        // multiple hooks
+    import { createRoot } from "react-dom/client";      // rendering
+    import { BrowserRouter, Route } from "react-router-dom"; // routing
+
+    import App from "./App";                            // default import
+    import { formatDate, COLORS } from "./utils";       // named imports
+    import styles from "./App.module.css";              // CSS module
+
+================================================================================
+21. PROMISES & async/await
+================================================================================
+
+When React fetches data from an API, it uses Promises and async/await.
+You don't need to master this yet, but you need to recognize the pattern.
+
+─────────────────────────────────
+WHAT IS A PROMISE?
+─────────────────────────────────
+
+A Promise represents a value that will be available IN THE FUTURE.
+Like ordering food at a restaurant — you get a receipt (promise) now,
+and the food arrives later.
+
+STATES OF A PROMISE:
+  - Pending   → waiting (food being prepared)
+  - Fulfilled → succeeded (food arrived)
+  - Rejected  → failed (kitchen is out of ingredients)
+
+─────────────────────────────────
+BASIC PROMISE (old way):
+─────────────────────────────────
+
+    fetch("https://api.example.com/students")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
+─────────────────────────────────
+async/await (modern, cleaner way):
+─────────────────────────────────
+
+  async makes a function return a Promise.
+  await pauses execution until the Promise resolves.
+
+    async function fetchStudents() {
+      try {
+        const response = await fetch("https://api.example.com/students");
+        const data = await response.json();
+        console.log(data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+
+  Read await like: "Wait here until this is done, then continue."
+
+─────────────────────────────────
+IN REACT — fetching data (useEffect + async/await):
+─────────────────────────────────
+
+    import { useState, useEffect } from "react";
+
+    function StudentList() {
+      const [students, setStudents] = useState([]);
+      const [loading, setLoading] = useState(true);
+
+      useEffect(() => {
+        async function fetchData() {
+          try {
+            const response = await fetch("https://api.example.com/students");
+            const data = await response.json();
+            setStudents(data);
+          } catch (error) {
+            console.error("Failed to fetch:", error);
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        fetchData();
+      }, []);
+
+      if (loading) return <p>Loading...</p>;
+
+      return (
+        <ul>
+          {students.map((s) => <li key={s.id}>{s.name}</li>)}
+        </ul>
+      );
+    }
+
+  You'll learn useEffect in a later session. For now, just recognize
+  the async/await pattern when you see it.
+
+================================================================================
+                          📝 COMPLETE ES6 CHEAT SHEET
+================================================================================
+
+  FEATURE               EXAMPLE                              USE IN REACT
+  ─────────────────────────────────────────────────────────────────────────────
+  const / let           const x = 1; let y = 2;             Always use const
+  Arrow function        const fn = (x) => x * 2             Components, handlers
+  Implicit return       const fn = (x) => x * 2             Inline JSX returns
+  Template literal      `Hello, ${name}!`                   Dynamic strings
+  Array destructuring   const [a, b] = arr                  useState()
+  Object destructuring  const { name, age } = obj           Props, event.target
+  Default param         fn(x, y = 10)                       Default prop values
+  Spread array          [...arr, newItem]                    State updates
+  Spread object         { ...obj, key: val }                 State updates, props
+  Rest params           fn(a, ...rest)                       Remaining props
+  Shorthand object      { name, age } (instead of {name:name}) Form data objects
+  Computed key          { [varName]: value }                 Dynamic form handler
+  map()                 arr.map(item => <Li key={...} />)   Rendering lists
+  filter()              arr.filter(item => item.active)      Filtering state
+  find()                arr.find(item => item.id === id)     Finding one item
+  findIndex()           arr.findIndex(...)                   Index-based updates
+  some()                arr.some(item => item.done)          Validation checks
+  every()               arr.every(item => item.valid)        All-valid checks
+  reduce()              arr.reduce((acc, n) => acc+n, 0)    Totals, grouping
+  Ternary               condition ? a : b                   Conditional JSX
+  &&                    condition && <Component />           Show/hide JSX
+  ||                    value || "default"                   Fallback values
+  ?.                    user?.address?.city                 Safe property access
+  ??                    score ?? "N/A"                      Null-only fallbacks
+  import/export         import Btn from './Button'           All component files
+  async/await           const data = await fetch(url)       API calls
+  ─────────────────────────────────────────────────────────────────────────────
+
+================================================================================
+                        🏋️ PRACTICE EXERCISES
+================================================================================
+
+  1. ARROW FUNCTIONS
+     Convert these to arrow functions:
+       a. function double(n) { return n * 2; }
+       b. function greet(name) { return "Hello, " + name; }
+       c. function isEven(n) { return n % 2 === 0; }
+
+  2. DESTRUCTURING
+     Given:
+       const student = { name: "Alice", age: 20, grade: "A", city: "London" };
+       const colors = ["red", "green", "blue", "yellow"];
+
+     a. Destructure name, age, grade from student
+     b. Rename grade to studentGrade on destructure
+     c. Destructure first and second color, collect rest in a variable
+
+  3. SPREAD
+     Given:
+       const original = { name: "Alice", age: 20, role: "Student" };
+     a. Create a copy with age changed to 21
+     b. Create a copy with a new property "isActive: true" added
+
+  4. ARRAY METHODS
+     Given:
+       const scores = [45, 82, 91, 67, 55, 88, 73];
+     a. Get scores above 75 (filter)
+     b. Double all scores (map)
+     c. Calculate the total (reduce)
+     d. Check if any score is above 90 (some)
+     e. Check if all scores are above 40 (every)
+
+  5. REACT MINI-CHALLENGE
+     Build a searchable student list component:
+     - State: array of student objects, search query string
+     - Filter students by name using the search input
+     - Display filtered results with map()
+     - Show "No results found" when filter returns empty array
+
+================================================================================
+                       END OF ES6 ESSENTIALS — YOU'RE READY FOR REACT! 🚀
+================================================================================

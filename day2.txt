@@ -1,0 +1,895 @@
+================================================================================
+                     DAY 2 - PROPS & COMPONENT COMMUNICATION
+              Beginner-Friendly Guide with Practical Examples
+================================================================================
+
+Today you will learn how to make components TALK to each other.
+By the end of Day 2, you will build a Student Card System — a real, reusable
+component that displays different student data.
+
+WHAT WE COVER TODAY:
+  1. Props — What and Why
+  2. Reusable Components
+  3. Parent → Child Communication
+  4. Destructuring Props
+  5. Passing Strings, Numbers, Booleans, Arrays & Objects
+  6. The children Prop
+  7. Component Composition
+  8. Why map() Exists
+  9. 🎯 Final Project: Student Card System
+
+================================================================================
+1. WHAT ARE PROPS?
+================================================================================
+
+On Day 1, we built components that always showed the SAME content:
+
+    function Greeting() {
+      return <h1>Hello, Alice!</h1>;
+    }
+
+That's great for Alice. But what if 100 students use this app?
+You'd have to create 100 different components. That's terrible!
+
+SOLUTION: Props (short for Properties).
+
+Props let you pass DATA into a component from the outside — like giving
+a component custom instructions.
+
+ANALOGY:
+  Think of a component like a COFFEE MACHINE.
+  The machine (component) is always the same.
+  But you put in different beans, water, and settings (props) to get
+  different results: espresso, latte, cappuccino.
+
+  function CoffeeMachine(props) {
+    return <p>Making you a {props.type}!</p>;
+  }
+
+  <CoffeeMachine type="latte" />       → Making you a latte!
+  <CoffeeMachine type="espresso" />    → Making you a espresso!
+
+Same component, different output. That's the POWER of props.
+
+================================================================================
+2. REUSABLE COMPONENTS
+================================================================================
+
+Without props, you'd write this:
+
+    function AliceCard() {
+      return <div><h2>Alice</h2><p>Age: 20</p></div>;
+    }
+
+    function BobCard() {
+      return <div><h2>Bob</h2><p>Age: 22</p></div>;
+    }
+
+    function CharlieCard() {
+      return <div><h2>Charlie</h2><p>Age: 21</p></div>;
+    }
+
+With props, you write ONE component:
+
+    function StudentCard(props) {
+      return (
+        <div>
+          <h2>{props.name}</h2>
+          <p>Age: {props.age}</p>
+        </div>
+      );
+    }
+
+And use it like this:
+
+    <StudentCard name="Alice" age={20} />
+    <StudentCard name="Bob" age={22} />
+    <StudentCard name="Charlie" age={21} />
+
+One component. Three different outputs. Reusable!
+
+================================================================================
+3. PARENT → CHILD COMMUNICATION
+================================================================================
+
+In React, data flows ONE WAY: from Parent DOWN to Child.
+This is called "Unidirectional Data Flow".
+
+    Parent Component
+        │
+        │  passes props
+        ▼
+    Child Component
+
+The PARENT decides what data to send.
+The CHILD receives it and displays it.
+The CHILD cannot send data back to the Parent via props (we'll learn events later).
+
+SIMPLE EXAMPLE:
+
+    // ✅ PARENT - App.jsx
+    function App() {
+      return (
+        <div>
+          <Greeting name="Alice" />
+          <Greeting name="Bob" />
+        </div>
+      );
+    }
+
+    // ✅ CHILD - Greeting.jsx
+    function Greeting(props) {
+      return <h1>Hello, {props.name}! 👋</h1>;
+    }
+
+HOW IT FLOWS:
+
+    App renders → passes name="Alice" to Greeting
+    Greeting receives props = { name: "Alice" }
+    Greeting displays: Hello, Alice! 👋
+
+IMPORTANT RULE: Props are READ-ONLY.
+  The child component can READ props but NEVER MODIFY them.
+
+  ❌ WRONG — never do this in the child:
+    function Greeting(props) {
+      props.name = "Someone Else";  // ← This will cause an error!
+      return <h1>Hello, {props.name}</h1>;
+    }
+
+  ✅ CORRECT — just read props:
+    function Greeting(props) {
+      return <h1>Hello, {props.name}</h1>;
+    }
+
+================================================================================
+4. DESTRUCTURING PROPS
+================================================================================
+
+Instead of writing props.name, props.age, props.email every time,
+we can use JavaScript destructuring to pull out values directly.
+
+WITHOUT DESTRUCTURING (works but verbose):
+
+    function StudentCard(props) {
+      return (
+        <div>
+          <h2>{props.name}</h2>
+          <p>Age: {props.age}</p>
+          <p>Email: {props.email}</p>
+        </div>
+      );
+    }
+
+WITH DESTRUCTURING (cleaner, preferred):
+
+    function StudentCard({ name, age, email }) {
+      return (
+        <div>
+          <h2>{name}</h2>
+          <p>Age: {age}</p>
+          <p>Email: {email}</p>
+        </div>
+      );
+    }
+
+You can also destructure inside the function body:
+
+    function StudentCard(props) {
+      const { name, age, email } = props;
+      return (
+        <div>
+          <h2>{name}</h2>
+          <p>Age: {age}</p>
+          <p>Email: {email}</p>
+        </div>
+      );
+    }
+
+All three versions do the same thing. The first destructuring style
+(in the function parameter) is the most common in real React code.
+
+DEFAULT VALUES WITH DESTRUCTURING:
+  You can set a default value in case a prop is not passed:
+
+    function StudentCard({ name, age, role = "Student" }) {
+      return (
+        <div>
+          <h2>{name}</h2>
+          <p>Age: {age}</p>
+          <p>Role: {role}</p>    ← Uses "Student" if no role prop is given
+        </div>
+      );
+    }
+
+    <StudentCard name="Alice" age={20} />           → Role: Student (default)
+    <StudentCard name="Bob" age={22} role="Admin" /> → Role: Admin
+
+================================================================================
+5. PASSING DIFFERENT TYPES OF PROPS
+================================================================================
+
+You can pass any JavaScript data type as a prop.
+The KEY RULE: Strings use quotes " ". Everything else uses { }.
+
+─────────────────────────────────
+A. STRINGS
+─────────────────────────────────
+
+    <StudentCard name="Alice" city="New York" />
+
+    function StudentCard({ name, city }) {
+      return <p>{name} is from {city}</p>;
+    }
+
+    Output: Alice is from New York
+
+─────────────────────────────────
+B. NUMBERS
+─────────────────────────────────
+
+  Numbers must use { } — NOT quotes (quotes make it a string!):
+
+    ❌ WRONG:  <StudentCard age="20" />   ← This is the STRING "20"
+    ✅ CORRECT: <StudentCard age={20} />  ← This is the NUMBER 20
+
+    function StudentCard({ name, age }) {
+      return (
+        <div>
+          <p>Name: {name}</p>
+          <p>Age: {age}</p>
+          <p>Age next year: {age + 1}</p>   ← Math works! (Only if it's a number)
+        </div>
+      );
+    }
+
+    <StudentCard name="Alice" age={20} />
+
+    Output:
+      Name: Alice
+      Age: 20
+      Age next year: 21
+
+─────────────────────────────────
+C. BOOLEANS
+─────────────────────────────────
+
+  Booleans (true/false) also use { }:
+
+    <StudentCard name="Alice" isEnrolled={true} hasPaid={false} />
+
+  SHORTCUT: Writing the prop name alone means true:
+
+    <StudentCard name="Alice" isEnrolled />    ← isEnrolled={true}
+
+    function StudentCard({ name, isEnrolled, hasPaid }) {
+      return (
+        <div>
+          <h2>{name}</h2>
+          <p>Enrolled: {isEnrolled ? "✅ Yes" : "❌ No"}</p>
+          <p>Paid: {hasPaid ? "✅ Paid" : "❌ Unpaid"}</p>
+        </div>
+      );
+    }
+
+    Output:
+      Alice
+      Enrolled: ✅ Yes
+      Paid: ❌ Unpaid
+
+─────────────────────────────────
+D. ARRAYS
+─────────────────────────────────
+
+  Arrays use { } and are rendered using .map():
+
+    <StudentCard
+      name="Alice"
+      skills={["React", "JavaScript", "CSS"]}
+    />
+
+    function StudentCard({ name, skills }) {
+      return (
+        <div>
+          <h2>{name}</h2>
+          <h3>Skills:</h3>
+          <ul>
+            {skills.map((skill) => (
+              <li key={skill}>{skill}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    Output:
+      Alice
+      Skills:
+        • React
+        • JavaScript
+        • CSS
+
+  ⚠️ NOTE ON key: When rendering lists with .map(), React requires each
+  item to have a unique key prop. We explain why in Section 8 (Why map() exists).
+
+─────────────────────────────────
+E. OBJECTS
+─────────────────────────────────
+
+  Objects use { } and are accessed with dot notation:
+
+    const studentInfo = {
+      name: "Alice",
+      age: 20,
+      grade: "A"
+    };
+
+    <StudentCard info={studentInfo} />
+
+    function StudentCard({ info }) {
+      return (
+        <div>
+          <h2>{info.name}</h2>
+          <p>Age: {info.age}</p>
+          <p>Grade: {info.grade}</p>
+        </div>
+      );
+    }
+
+  OR you can spread the object directly (spread syntax):
+
+    <StudentCard {...studentInfo} />
+    // Same as: <StudentCard name="Alice" age={20} grade="A" />
+
+    function StudentCard({ name, age, grade }) {
+      return (
+        <div>
+          <h2>{name}</h2>
+          <p>Age: {age}</p>
+          <p>Grade: {grade}</p>
+        </div>
+      );
+    }
+
+  PROP TYPES SUMMARY:
+  ┌───────────┬──────────────────────────────────────┬──────────────────────────┐
+  │ Type      │ Example                              │ Syntax                   │
+  ├───────────┼──────────────────────────────────────┼──────────────────────────┤
+  │ String    │ name="Alice"                         │ Quotes                   │
+  │ Number    │ age={20}                             │ Curly braces             │
+  │ Boolean   │ isEnrolled={true} or isEnrolled      │ Curly braces or alone    │
+  │ Array     │ skills={["React", "JS"]}             │ Curly braces             │
+  │ Object    │ info={{ name: "Alice", age: 20 }}    │ Double curly braces      │
+  │ Function  │ onClick={handleClick}                │ Curly braces             │
+  └───────────┴──────────────────────────────────────┴──────────────────────────┘
+
+================================================================================
+6. THE children PROP
+================================================================================
+
+WHAT IS children?
+  The children prop is a SPECIAL built-in prop. It automatically contains
+  whatever JSX you write BETWEEN the opening and closing tags of a component.
+
+WITHOUT children (self-closing):
+    <Button />
+
+WITH children (content between tags):
+    <Button>Click Me</Button>
+    <Button><span>🚀 Launch</span></Button>
+
+  Everything between <Button> and </Button> becomes props.children.
+
+PRACTICAL EXAMPLE:
+
+    // Button component that wraps any content
+    function Button({ children }) {
+      return (
+        <button style={{ padding: "10px 20px", backgroundColor: "blue", color: "white" }}>
+          {children}
+        </button>
+      );
+    }
+
+    // Use it with different content:
+    <Button>Click Me</Button>
+    <Button>Submit Form</Button>
+    <Button>🚀 Launch Rocket</Button>
+
+  Output (three different buttons):
+    [ Click Me ]   [ Submit Form ]   [ 🚀 Launch Rocket ]
+
+  The Button component doesn't care WHAT the content is. It just wraps it.
+
+CHILDREN CAN BE ANYTHING:
+
+    <Card>
+      <h2>Student Profile</h2>
+      <p>Alice, Age 20</p>
+      <button>View Details</button>
+    </Card>
+
+    function Card({ children }) {
+      return (
+        <div style={{ border: "1px solid gray", padding: "20px", borderRadius: "8px" }}>
+          {children}
+        </div>
+      );
+    }
+
+  The Card wraps everything in a styled box — without knowing what's inside!
+
+WHY IS children USEFUL?
+  It's perfect for LAYOUT components: Cards, Modals, Sidebars, Wrappers.
+  The layout is fixed, but the CONTENT is flexible.
+
+================================================================================
+7. COMPONENT COMPOSITION
+================================================================================
+
+WHAT IS COMPOSITION?
+  Composition means building complex UIs by combining small, simple components.
+  Instead of one giant component, you build many small ones and combine them.
+
+ANALOGY: A car is not built as one solid block. It's built from:
+  Engine + Wheels + Seats + Windows + Doors = Car
+  Similarly: Header + Sidebar + Content + Footer = Page
+
+EXAMPLE — Building a Student Profile Page:
+
+    // Small components (building blocks)
+    function Avatar({ name }) {
+      return <div className="avatar">{name[0].toUpperCase()}</div>;
+    }
+
+    function Badge({ label }) {
+      return <span className="badge">{label}</span>;
+    }
+
+    function SkillList({ skills }) {
+      return (
+        <ul>
+          {skills.map((skill) => (
+            <li key={skill}>{skill}</li>
+          ))}
+        </ul>
+      );
+    }
+
+    // Composed component using all small pieces
+    function StudentCard({ name, age, grade, skills }) {
+      return (
+        <div className="card">
+          <Avatar name={name} />
+          <h2>{name}</h2>
+          <Badge label={`Grade: ${grade}`} />
+          <p>Age: {age}</p>
+          <SkillList skills={skills} />
+        </div>
+      );
+    }
+
+    // Parent using StudentCard
+    function App() {
+      return (
+        <div>
+          <StudentCard
+            name="Alice"
+            age={20}
+            grade="A"
+            skills={["React", "CSS", "HTML"]}
+          />
+          <StudentCard
+            name="Bob"
+            age={22}
+            grade="B+"
+            skills={["JavaScript", "Node.js"]}
+          />
+        </div>
+      );
+    }
+
+BENEFITS OF COMPOSITION:
+  ✅ Each component has one job (easy to understand)
+  ✅ Easy to test individual components
+  ✅ Easy to reuse components in other parts of the app
+  ✅ Easy to update one component without breaking others
+
+================================================================================
+8. WHY map() EXISTS (and how it works in React)
+================================================================================
+
+PROBLEM WITHOUT map():
+  Imagine you have 100 students. Without map(), you'd write:
+
+    function App() {
+      return (
+        <ul>
+          <li>Alice</li>
+          <li>Bob</li>
+          <li>Charlie</li>
+          {/* ... 97 more lines */}
+        </ul>
+      );
+    }
+
+  That's impossible to maintain. Data changes? You update 100 lines manually.
+
+WHAT IS map()?
+  map() is a JavaScript array method. It takes each item in an array,
+  transforms it, and returns a NEW array.
+
+  BASIC map() EXAMPLE (plain JavaScript):
+
+    const numbers = [1, 2, 3];
+    const doubled = numbers.map((num) => num * 2);
+    console.log(doubled);   // [2, 4, 6]
+
+  SAME IDEA IN REACT — turning data into JSX:
+
+    const students = ["Alice", "Bob", "Charlie"];
+
+    const listItems = students.map((student) => (
+      <li key={student}>{student}</li>
+    ));
+
+    // listItems is now:
+    // [<li>Alice</li>, <li>Bob</li>, <li>Charlie</li>]
+
+  React can render an array of JSX elements directly!
+
+map() IN A COMPONENT:
+
+    function StudentList() {
+      const students = ["Alice", "Bob", "Charlie", "Diana"];
+
+      return (
+        <ul>
+          {students.map((student) => (
+            <li key={student}>{student}</li>
+          ))}
+        </ul>
+      );
+    }
+
+    Output:
+      • Alice
+      • Bob
+      • Charlie
+      • Diana
+
+WHY THE key PROP IS REQUIRED:
+  When React renders a list, it needs to track each item efficiently.
+  If the list changes (item added/removed/reordered), React uses key to
+  know WHICH item changed instead of re-rendering everything.
+
+  ✅ Use a unique identifier as key (id, email, etc.):
+
+    const students = [
+      { id: 1, name: "Alice" },
+      { id: 2, name: "Bob" },
+      { id: 3, name: "Charlie" },
+    ];
+
+    {students.map((student) => (
+      <li key={student.id}>{student.name}</li>
+    ))}
+
+  ❌ Avoid using index as key (causes bugs when list order changes):
+
+    {students.map((student, index) => (
+      <li key={index}>{student.name}</li>     ← Not recommended
+    ))}
+
+  NOTE: key is a special prop. It's ONLY for React's internal use.
+  You cannot access it inside the component with props.key.
+
+map() WITH COMPONENTS:
+
+    const students = [
+      { id: 1, name: "Alice", grade: "A", age: 20 },
+      { id: 2, name: "Bob",   grade: "B", age: 22 },
+      { id: 3, name: "Diana", grade: "A+", age: 19 },
+    ];
+
+    function App() {
+      return (
+        <div>
+          {students.map((student) => (
+            <StudentCard
+              key={student.id}
+              name={student.name}
+              grade={student.grade}
+              age={student.age}
+            />
+          ))}
+        </div>
+      );
+    }
+
+  One line of map() generates three StudentCard components.
+  Add more students to the array? More cards appear automatically!
+
+================================================================================
+9. 🎯 FINAL PROJECT: STUDENT CARD SYSTEM
+================================================================================
+
+Let's put everything together and build a real Student Card System.
+
+GOAL:
+  - A data array of students (objects)
+  - A reusable StudentCard component
+  - A StudentList component that renders all cards using map()
+  - Show: name, age, department, grade, skills, enrollment status
+
+─────────────────────────────────────────────────────────────────────────────
+FILE: src/data/students.js
+─────────────────────────────────────────────────────────────────────────────
+
+    const students = [
+      {
+        id: 1,
+        name: "Alice Johnson",
+        age: 20,
+        department: "Computer Science",
+        grade: "A",
+        gpa: 3.9,
+        skills: ["React", "JavaScript", "CSS"],
+        isEnrolled: true,
+        hasPaid: true,
+      },
+      {
+        id: 2,
+        name: "Bob Martinez",
+        age: 22,
+        department: "Software Engineering",
+        grade: "B+",
+        gpa: 3.4,
+        skills: ["Python", "Django", "SQL"],
+        isEnrolled: true,
+        hasPaid: false,
+      },
+      {
+        id: 3,
+        name: "Charlie Lee",
+        age: 21,
+        department: "Data Science",
+        grade: "A-",
+        gpa: 3.7,
+        skills: ["Machine Learning", "Python", "TensorFlow"],
+        isEnrolled: false,
+        hasPaid: false,
+      },
+    ];
+
+    export default students;
+
+─────────────────────────────────────────────────────────────────────────────
+FILE: src/components/Badge.jsx
+─────────────────────────────────────────────────────────────────────────────
+
+    export default function Badge({ label, color = "gray" }) {
+      const style = {
+        display: "inline-block",
+        padding: "3px 10px",
+        borderRadius: "12px",
+        backgroundColor: color,
+        color: "white",
+        fontSize: "12px",
+        marginRight: "6px",
+        marginBottom: "4px",
+      };
+
+      return <span style={style}>{label}</span>;
+    }
+
+─────────────────────────────────────────────────────────────────────────────
+FILE: src/components/StudentCard.jsx
+─────────────────────────────────────────────────────────────────────────────
+
+    import Badge from "./Badge";
+
+    export default function StudentCard({
+      name,
+      age,
+      department,
+      grade,
+      gpa,
+      skills,
+      isEnrolled,
+      hasPaid,
+    }) {
+      const cardStyle = {
+        border: "1px solid #ddd",
+        borderRadius: "12px",
+        padding: "20px",
+        margin: "16px",
+        maxWidth: "320px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        backgroundColor: isEnrolled ? "#fff" : "#f9f9f9",
+      };
+
+      const avatarStyle = {
+        width: "60px",
+        height: "60px",
+        borderRadius: "50%",
+        backgroundColor: "#4f46e5",
+        color: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "24px",
+        fontWeight: "bold",
+        marginBottom: "12px",
+      };
+
+      return (
+        <div style={cardStyle}>
+          {/* Avatar: shows first letter of name */}
+          <div style={avatarStyle}>{name[0]}</div>
+
+          {/* Name & Department */}
+          <h2 style={{ margin: "0 0 4px" }}>{name}</h2>
+          <p style={{ color: "gray", margin: "0 0 12px" }}>{department}</p>
+
+          {/* Stats */}
+          <p>📅 Age: <strong>{age}</strong></p>
+          <p>🎓 Grade: <strong>{grade}</strong> &nbsp;|&nbsp; GPA: <strong>{gpa}</strong></p>
+
+          {/* Status Badges */}
+          <div style={{ marginTop: "12px" }}>
+            <Badge
+              label={isEnrolled ? "✅ Enrolled" : "❌ Not Enrolled"}
+              color={isEnrolled ? "green" : "red"}
+            />
+            <Badge
+              label={hasPaid ? "💳 Paid" : "⚠️ Unpaid"}
+              color={hasPaid ? "blue" : "orange"}
+            />
+          </div>
+
+          {/* Skills */}
+          <div style={{ marginTop: "12px" }}>
+            <strong>Skills:</strong>
+            <div style={{ marginTop: "6px" }}>
+              {skills.map((skill) => (
+                <Badge key={skill} label={skill} color="#4f46e5" />
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+─────────────────────────────────────────────────────────────────────────────
+FILE: src/components/StudentList.jsx
+─────────────────────────────────────────────────────────────────────────────
+
+    import students from "../data/students";
+    import StudentCard from "./StudentCard";
+
+    export default function StudentList() {
+      return (
+        <div>
+          <h1 style={{ textAlign: "center", padding: "20px" }}>
+            🎓 Student Card System
+          </h1>
+          <p style={{ textAlign: "center", color: "gray" }}>
+            Total Students: {students.length}
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+            {students.map((student) => (
+              <StudentCard
+                key={student.id}
+                name={student.name}
+                age={student.age}
+                department={student.department}
+                grade={student.grade}
+                gpa={student.gpa}
+                skills={student.skills}
+                isEnrolled={student.isEnrolled}
+                hasPaid={student.hasPaid}
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // OR using spread syntax (shorter):
+    // {students.map((student) => (
+    //   <StudentCard key={student.id} {...student} />
+    // ))}
+
+─────────────────────────────────────────────────────────────────────────────
+FILE: src/App.jsx
+─────────────────────────────────────────────────────────────────────────────
+
+    import StudentList from "./components/StudentList";
+
+    export default function App() {
+      return <StudentList />;
+    }
+
+─────────────────────────────────────────────────────────────────────────────
+FILE: src/main.jsx
+─────────────────────────────────────────────────────────────────────────────
+
+    import { createRoot } from "react-dom/client";
+    import App from "./App";
+
+    createRoot(document.getElementById("root")).render(<App />);
+
+WHAT THE FINAL APP SHOWS:
+
+    🎓 Student Card System
+    Total Students: 3
+
+    ┌──────────────────────┐   ┌──────────────────────┐   ┌──────────────────────┐
+    │  A                   │   │  B                   │   │  C                   │
+    │  Alice Johnson       │   │  Bob Martinez        │   │  Charlie Lee         │
+    │  Computer Science    │   │  Software Engineering│   │  Data Science        │
+    │  📅 Age: 20          │   │  📅 Age: 22          │   │  📅 Age: 21          │
+    │  🎓 Grade: A  GPA:3.9│   │  🎓 Grade: B+  GPA:3.4  │  🎓 Grade: A- GPA:3.7│
+    │  [✅ Enrolled]       │   │  [✅ Enrolled]       │   │  [❌ Not Enrolled]   │
+    │  [💳 Paid]           │   │  [⚠️ Unpaid]         │   │  [⚠️ Unpaid]         │
+    │  Skills:             │   │  Skills:             │   │  Skills:             │
+    │  [React][JS][CSS]    │   │  [Python][Django]..  │   │  [ML][Python]...     │
+    └──────────────────────┘   └──────────────────────┘   └──────────────────────┘
+
+PROJECT FOLDER STRUCTURE:
+
+    my-app/
+    ├── src/
+    │   ├── components/
+    │   │   ├── Badge.jsx
+    │   │   ├── StudentCard.jsx
+    │   │   └── StudentList.jsx
+    │   ├── data/
+    │   │   └── students.js
+    │   ├── App.jsx
+    │   └── main.jsx
+    └── ...
+
+================================================================================
+                              📝 DAY 2 SUMMARY
+================================================================================
+
+  CONCEPT                    WHAT IT IS
+  ─────────────────────────────────────────────────────────────────────────
+  Props                      Data passed from Parent to Child component.
+  Reusable Components        One component, different data = different output.
+  Parent → Child             Data flows DOWN via props. One-way only.
+  Destructuring              Pull props into variables: ({ name, age }).
+  Default Props              function Card({ role = "Student" }) { ... }
+  String prop                name="Alice"  → use quotes
+  Number prop                age={20}      → use curly braces
+  Boolean prop               isActive or isActive={true}
+  Array prop                 skills={["JS", "CSS"]} → render with .map()
+  Object prop                info={{ name: "Alice" }} → access with dot
+  Spread props               {...student} → passes all object keys as props
+  children prop              Content between opening and closing tags
+  Composition                Build complex UIs from small, focused components
+  map()                      Transform array items into JSX elements
+  key prop                   Unique identifier for list items (required by React)
+  ─────────────────────────────────────────────────────────────────────────
+
+================================================================================
+                      🏠 HOMEWORK AFTER DAY 2
+================================================================================
+
+  1. Add 2 more students to the students.js data array.
+  2. Add a "phone" prop to StudentCard and display it.
+  3. Create a separate Header component with the title and total count.
+  4. Add a "year" prop (1st year, 2nd year, 3rd year) to each student.
+  5. CHALLENGE: Add a filter — only show students where isEnrolled is true.
+       Hint: use students.filter() before students.map()
+
+     Example:
+       students
+         .filter((s) => s.isEnrolled)
+         .map((s) => <StudentCard key={s.id} {...s} />)
+
+================================================================================
+                    END OF DAY 2 - EXCELLENT WORK! 🎉
+================================================================================

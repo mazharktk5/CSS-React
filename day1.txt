@@ -1,0 +1,1090 @@
+================================================================================
+                     DAY 1 - INTRODUCTION TO REACT
+              Beginner-Friendly Guide with Practical Examples
+================================================================================
+
+--------------------------------------------------------------------------------
+1. WHY REACT?
+--------------------------------------------------------------------------------
+
+Before React existed, developers built websites using plain HTML, CSS, and
+JavaScript. As applications grew bigger, managing the UI became very messy.
+Imagine updating 10 different places on a page just because one piece of data
+changed. That's painful!
+
+React was created by Facebook (Meta) in 2013 to solve this problem.
+
+WHY REACT IS POPULAR:
+  - Component-Based: Build small, reusable pieces (like LEGO blocks).
+  - Declarative: You tell React WHAT to show, React figures out HOW to update it.
+  - Fast: React uses a Virtual DOM to update only what changed (not the whole page).
+  - Huge Community: Millions of developers, tons of libraries, tons of jobs.
+  - Cross-Platform: With React Native, same knowledge works for mobile apps.
+
+REAL-WORLD ANALOGY:
+  Think of a website like a restaurant menu.
+  - Without React: Every time a dish is added, you reprint the ENTIRE menu.
+  - With React: You just update that ONE dish and React handles the rest.
+
+--------------------------------------------------------------------------------
+2. SPA vs MPA
+--------------------------------------------------------------------------------
+
+MPA - Multi Page Application (Traditional)
+-------------------------------------------
+Every time you click a link, the browser sends a request to the server, and the
+server sends back a BRAND NEW HTML page. The whole page reloads.
+
+  Example: Old e-commerce sites, government websites.
+
+  Flow:
+    User clicks "About" → Browser asks server → Server sends new HTML → Page reloads
+
+SPA - Single Page Application (Modern)
+---------------------------------------
+The browser loads ONE HTML file at the start. When you click links, JavaScript
+swaps the content WITHOUT reloading the whole page. It feels fast, like a
+desktop app.
+
+  Example: Gmail, Facebook, Twitter, YouTube.
+
+  Flow:
+    User clicks "About" → JavaScript swaps the content → NO page reload!
+
+  COMPARISON TABLE:
+  ┌─────────────────┬──────────────────────┬────────────────────────┐
+  │ Feature         │ MPA                  │ SPA                    │
+  ├─────────────────┼──────────────────────┼────────────────────────┤
+  │ Page Reload     │ Yes, every click     │ No reload              │
+  │ Speed           │ Slower               │ Faster (after load)    │
+  │ SEO             │ Better by default    │ Needs extra setup      │
+  │ User Experience │ Old-school feel      │ App-like feel          │
+  │ Example         │ Wikipedia            │ Gmail, Facebook        │
+  └─────────────────┴──────────────────────┴────────────────────────┘
+
+React builds SPAs by default.
+
+--------------------------------------------------------------------------------
+3. LIBRARY vs FRAMEWORK
+--------------------------------------------------------------------------------
+
+This is one of the most common beginner questions: "Is React a library or
+a framework?"
+
+ANSWER: React is a LIBRARY. Specifically, a UI library.
+
+LIBRARY:
+  - You are in control.
+  - You call the library's code when YOU need it.
+  - It solves ONE specific problem (React = building UIs).
+  - You pick and choose other tools yourself (routing, state, etc.).
+
+  Analogy: A library is like a TOOLBOX. You pick the hammer when you need it.
+
+FRAMEWORK:
+  - The framework is in control (called "Inversion of Control").
+  - The framework calls YOUR code.
+  - It gives you a full structure (routing, state, etc. all built in).
+  - Less flexibility, more structure.
+
+  Analogy: A framework is like a HOUSE BLUEPRINT. You fill in the rooms, but
+  the structure is already decided.
+
+  EXAMPLES:
+  ┌───────────────┬─────────────────────────────────────────────────┐
+  │ Library       │ React, jQuery, Axios, Lodash                    │
+  │ Framework     │ Angular, Next.js, Vue (debated), Django, Rails  │
+  └───────────────┴─────────────────────────────────────────────────┘
+
+  NOTE: Next.js is a FRAMEWORK built ON TOP of React (the library).
+
+--------------------------------------------------------------------------------
+4. NODE.JS
+--------------------------------------------------------------------------------
+
+WHAT IS NODE.JS?
+  JavaScript was originally designed to run ONLY in the browser (like Chrome).
+  Node.js lets JavaScript run on your COMPUTER (outside the browser).
+
+  Think of it this way:
+    - Browser JavaScript  → runs inside Chrome/Firefox
+    - Node.js JavaScript  → runs on your computer like Python or Java
+
+WHY DO WE NEED NODE.JS FOR REACT?
+  React development tools (like Vite) are Node.js programs. You need Node.js
+  installed to:
+    - Run the development server
+    - Install packages (via npm)
+    - Build your app for production
+
+HOW TO CHECK IF NODE IS INSTALLED:
+  Open your terminal and type:
+
+    node --version
+
+  You should see something like: v20.11.0
+
+  If not installed, download from: https://nodejs.org (choose LTS version)
+
+QUICK EXAMPLE (just to understand Node):
+  Create a file called hello.js:
+
+    console.log("Hello from Node.js!");
+
+  Run it in terminal:
+
+    node hello.js
+
+  Output: Hello from Node.js!
+
+  This proves JavaScript is now running on your computer, not in a browser!
+
+--------------------------------------------------------------------------------
+5. NPM (Node Package Manager)
+--------------------------------------------------------------------------------
+
+WHAT IS NPM?
+  npm is like an APP STORE for JavaScript code. Other developers write useful
+  code (called "packages" or "libraries") and publish them to npm. You can
+  download and use them in your project for FREE.
+
+  npm comes automatically installed with Node.js.
+
+CHECK NPM VERSION:
+
+    npm --version
+
+  You should see something like: 10.2.3
+
+COMMON NPM COMMANDS:
+
+  ┌──────────────────────────────────┬──────────────────────────────────────┐
+  │ Command                          │ What it does                         │
+  ├──────────────────────────────────┼──────────────────────────────────────┤
+  │ npm install                      │ Install all packages in package.json │
+  │ npm install package-name         │ Install a specific package           │
+  │ npm install -D package-name      │ Install as dev-only dependency       │
+  │ npm uninstall package-name       │ Remove a package                     │
+  │ npm run dev                      │ Run the dev server (for Vite)        │
+  │ npm run build                    │ Build app for production             │
+  └──────────────────────────────────┴──────────────────────────────────────┘
+
+WHAT IS package.json?
+  Every React project has a package.json file. It's like a recipe card for
+  your project. It lists:
+    - Project name and version
+    - All packages your project needs (dependencies)
+    - Scripts you can run (like "dev", "build")
+
+  Example package.json:
+
+    {
+      "name": "my-react-app",
+      "version": "1.0.0",
+      "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+      },
+      "dependencies": {
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
+      },
+      "devDependencies": {
+        "vite": "^5.0.0"
+      }
+    }
+
+WHAT IS node_modules?
+  When you run "npm install", npm downloads all packages into a folder called
+  node_modules. This folder can be HUGE (thousands of files). You NEVER push
+  this to GitHub. Instead, you add it to .gitignore.
+
+  Anyone who clones your project just runs "npm install" and gets all packages.
+
+--------------------------------------------------------------------------------
+6. VITE
+--------------------------------------------------------------------------------
+
+WHAT IS VITE?
+  Vite (pronounced "veet", French for "fast") is a BUILD TOOL and DEV SERVER.
+  It's the recommended way to start a React project today (replaced Create React App).
+
+  Vite does two main things:
+    1. DEV SERVER: Starts a local server so you can see your React app in the
+       browser while coding. It hot-reloads instantly when you save files.
+    2. BUILD: Bundles all your files into optimized HTML/CSS/JS for production.
+
+WHY VITE OVER CREATE REACT APP (CRA)?
+  - Vite starts in milliseconds. CRA took 30+ seconds.
+  - Vite updates instantly on save. CRA was slow.
+  - Vite is the industry standard now.
+
+HOW TO CREATE A REACT PROJECT WITH VITE:
+
+  Step 1: Open terminal and run:
+
+    npm create vite@latest my-app
+
+  Step 2: It will ask questions:
+    - Select a framework: React
+    - Select a variant: JavaScript  (or TypeScript for advanced)
+
+  Step 3: Follow the instructions:
+
+    cd my-app
+    npm install
+    npm run dev
+
+  Step 4: Open browser at http://localhost:5173
+  Your React app is running!
+
+  SHORTCUT (skip questions):
+
+    npm create vite@latest my-app -- --template react
+
+--------------------------------------------------------------------------------
+7. PROJECT STRUCTURE
+--------------------------------------------------------------------------------
+
+After creating a Vite + React project, your folder looks like this:
+
+    my-app/
+    ├── node_modules/        ← Downloaded packages (never touch this)
+    ├── public/              ← Static files (images, fonts, etc.)
+    │   └── vite.svg
+    ├── src/                 ← YOUR CODE LIVES HERE
+    │   ├── assets/          ← Images, icons used in components
+    │   │   └── react.svg
+    │   ├── App.css          ← Styles for App component
+    │   ├── App.jsx          ← Main App component
+    │   ├── index.css        ← Global styles
+    │   └── main.jsx         ← Entry point of the app
+    ├── .gitignore           ← Tells Git which files to ignore
+    ├── index.html           ← The ONE HTML file (the SPA shell)
+    ├── package.json         ← Project info and dependencies
+    ├── package-lock.json    ← Exact versions of installed packages
+    └── vite.config.js       ← Vite configuration
+
+  KEY FILES TO KNOW AS A BEGINNER:
+
+  index.html   → The shell. Has a <div id="root"> where React injects content.
+  main.jsx     → Entry point. Connects React to index.html.
+  App.jsx      → Your main component. Start writing your UI here.
+  package.json → Your project's recipe card.
+
+================================================================================
+                          ✅ REACT BASICS
+================================================================================
+
+--------------------------------------------------------------------------------
+8. COMPONENTS
+--------------------------------------------------------------------------------
+
+WHAT IS A COMPONENT?
+  A component is a REUSABLE piece of UI. Think of it like a custom HTML tag
+  that you define yourself.
+
+  A website is made up of many components:
+    - Header component
+    - Navbar component
+    - Button component
+    - Card component
+    - Footer component
+
+  ANALOGY: If a website is a LEGO set, components are the individual LEGO blocks.
+
+TYPES OF COMPONENTS:
+  In modern React, we use FUNCTION COMPONENTS (arrow functions or regular functions).
+
+  SIMPLEST COMPONENT:
+
+    function Hello() {
+      return <h1>Hello, World!</h1>;
+    }
+
+  USING THE COMPONENT (like an HTML tag):
+
+    <Hello />
+
+RULES FOR COMPONENTS:
+  1. Component name MUST start with a Capital Letter.
+     ✅ function Button() { ... }
+     ❌ function button() { ... }  ← React treats this as HTML tag, not component
+
+  2. A component must return JSX (or null).
+
+PRACTICAL EXAMPLE - Building a simple page with components:
+
+    // Greeting.jsx
+    function Greeting() {
+      return <h1>Welcome to React Class!</h1>;
+    }
+
+    // Teacher.jsx
+    function Teacher() {
+      return <p>Your teacher is awesome 😄</p>;
+    }
+
+    // App.jsx - combining components
+    function App() {
+      return (
+        <div>
+          <Greeting />
+          <Teacher />
+        </div>
+      );
+    }
+
+  Result on screen:
+    Welcome to React Class!
+    Your teacher is awesome 😄
+
+--------------------------------------------------------------------------------
+9. JSX
+--------------------------------------------------------------------------------
+
+WHAT IS JSX?
+  JSX stands for JavaScript XML. It lets you write HTML-like code INSIDE
+  JavaScript. This is what makes React so intuitive.
+
+  WITHOUT JSX (pure JavaScript - ugly):
+
+    const element = React.createElement('h1', null, 'Hello, World!');
+
+  WITH JSX (clean and readable):
+
+    const element = <h1>Hello, World!</h1>;
+
+  JSX is NOT real HTML. It gets converted (transpiled) to JavaScript behind
+  the scenes by a tool called Babel (Vite handles this automatically).
+
+PRACTICAL EXAMPLE:
+
+    function WelcomeCard() {
+      return (
+        <div>
+          <h1>Hello, Student!</h1>
+          <p>Day 1 of React is going great.</p>
+          <button>Click Me</button>
+        </div>
+      );
+    }
+
+  This looks like HTML but it's actually JSX inside a JavaScript function!
+
+--------------------------------------------------------------------------------
+10. JSX RULES
+--------------------------------------------------------------------------------
+
+JSX has some important rules that differ from regular HTML.
+
+RULE 1: Return ONE parent element
+  A component can only return ONE root element. Wrap multiple elements in a
+  single parent.
+
+  ❌ WRONG:
+    function App() {
+      return (
+        <h1>Title</h1>
+        <p>Paragraph</p>
+      );
+    }
+
+  ✅ CORRECT:
+    function App() {
+      return (
+        <div>
+          <h1>Title</h1>
+          <p>Paragraph</p>
+        </div>
+      );
+    }
+
+RULE 2: All tags must be closed
+  In HTML, <br> and <img> don't need closing. In JSX, they MUST be self-closed.
+
+  ❌ WRONG:   <br>   <img src="photo.jpg">
+  ✅ CORRECT: <br /> <img src="photo.jpg" />
+
+RULE 3: Use className instead of class
+  "class" is a reserved word in JavaScript. In JSX, use className.
+
+  ❌ WRONG:   <div class="container">
+  ✅ CORRECT: <div className="container">
+
+RULE 4: Use camelCase for HTML attributes
+  HTML attributes become camelCase in JSX.
+
+  ❌ WRONG:   <button onclick="handleClick">
+  ✅ CORRECT: <button onClick={handleClick}>
+
+  More examples:
+    HTML          →  JSX
+    tabindex      →  tabIndex
+    for           →  htmlFor  (used in <label>)
+    maxlength     →  maxLength
+
+RULE 5: JavaScript expressions go inside { }
+  To use JavaScript inside JSX, wrap it in curly braces.
+
+    function App() {
+      const name = "Alice";
+      return <h1>Hello, {name}!</h1>;
+    }
+
+  Output: Hello, Alice!
+
+COMPLETE EXAMPLE SHOWING ALL RULES:
+
+    function StudentCard() {
+      const studentName = "Bob";
+      const score = 95;
+
+      return (
+        <div className="card">
+          <h2>Student: {studentName}</h2>
+          <p>Score: {score}</p>
+          <img src="student.jpg" alt="Student" />
+          <br />
+          <button onClick={() => alert("Hello!")}>Say Hello</button>
+        </div>
+      );
+    }
+
+--------------------------------------------------------------------------------
+11. FRAGMENTS
+--------------------------------------------------------------------------------
+
+PROBLEM: Using <div> as a wrapper adds an extra, unnecessary HTML element.
+Sometimes this breaks your CSS layout.
+
+SOLUTION: Use a Fragment. A Fragment is an invisible wrapper — it groups
+elements without adding extra HTML to the page.
+
+METHOD 1: Using <React.Fragment>
+
+    import React from 'react';
+
+    function App() {
+      return (
+        <React.Fragment>
+          <h1>Title</h1>
+          <p>Paragraph</p>
+        </React.Fragment>
+      );
+    }
+
+METHOD 2: Short syntax <>...</> (most common, preferred)
+
+    function App() {
+      return (
+        <>
+          <h1>Title</h1>
+          <p>Paragraph</p>
+        </>
+      );
+    }
+
+WHEN TO USE FRAGMENTS:
+  - When you don't want an extra <div> in the DOM
+  - When building table rows (a <div> inside <tbody> is invalid HTML)
+  - When styling would be affected by an extra wrapper
+
+PRACTICAL EXAMPLE:
+
+    // ❌ Adds unnecessary <div> to the DOM
+    function UserInfo() {
+      return (
+        <div>
+          <dt>Name</dt>
+          <dd>Alice</dd>
+        </div>
+      );
+    }
+
+    // ✅ Clean - no extra element in the DOM
+    function UserInfo() {
+      return (
+        <>
+          <dt>Name</dt>
+          <dd>Alice</dd>
+        </>
+      );
+    }
+
+--------------------------------------------------------------------------------
+12. EXPRESSIONS IN JSX
+--------------------------------------------------------------------------------
+
+Inside JSX, you can put ANY JavaScript EXPRESSION inside { }.
+
+WHAT IS AN EXPRESSION?
+  An expression is any code that produces a VALUE.
+    - 2 + 2       → produces 4
+    - "hello"     → produces "hello"
+    - name        → produces the value of the variable
+    - 5 > 3       → produces true
+    - Math.max(5,10) → produces 10
+
+WHAT IS NOT AN EXPRESSION (cannot go in JSX):
+  - if/else statements
+  - for loops
+  - variable declarations (const, let)
+  These are STATEMENTS. You can use them OUTSIDE the return() though.
+
+EXAMPLES OF VALID EXPRESSIONS IN JSX:
+
+  1. Variables:
+      const name = "Alice";
+      <h1>Hello, {name}!</h1>
+
+  2. Math:
+      <p>Sum: {5 + 3}</p>          → Sum: 8
+      <p>Price: ${price * 1.1}</p>  → Price: $110 (10% tax)
+
+  3. String methods:
+      const name = "alice";
+      <p>{name.toUpperCase()}</p>   → ALICE
+
+  4. Ternary operator (if/else alternative):
+      const isLoggedIn = true;
+      <p>{isLoggedIn ? "Welcome back!" : "Please log in"}</p>
+      → Welcome back!
+
+  5. Function calls:
+      function getGreeting() {
+        return "Good morning!";
+      }
+      <p>{getGreeting()}</p>        → Good morning!
+
+  6. Array methods:
+      const fruits = ["Apple", "Banana", "Cherry"];
+      <ul>
+        {fruits.map((fruit) => <li>{fruit}</li>)}
+      </ul>
+
+COMPLETE PRACTICAL EXAMPLE:
+
+    function ProductCard() {
+      const productName = "React T-Shirt";
+      const price = 25;
+      const discount = 0.1;  // 10%
+      const inStock = true;
+      const sizes = ["S", "M", "L", "XL"];
+
+      return (
+        <div className="product">
+          <h2>{productName.toUpperCase()}</h2>
+          <p>Original Price: ${price}</p>
+          <p>Discounted Price: ${price - price * discount}</p>
+          <p>Status: {inStock ? "✅ In Stock" : "❌ Out of Stock"}</p>
+          <p>Available Sizes:</p>
+          <ul>
+            {sizes.map((size) => (
+              <li key={size}>{size}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+  Output on screen:
+    REACT T-SHIRT
+    Original Price: $25
+    Discounted Price: $22.5
+    Status: ✅ In Stock
+    Available Sizes:
+      • S
+      • M
+      • L
+      • XL
+
+================================================================================
+                          ✅ REACT STARTUP
+================================================================================
+
+--------------------------------------------------------------------------------
+13. index.html
+--------------------------------------------------------------------------------
+
+In the root of your Vite project, there's an index.html file. This is the ONE
+and ONLY HTML file in your entire React app (remember: it's a SPA!).
+
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>My React App</title>
+      </head>
+      <body>
+        <div id="root"></div>                          ← ⭐ KEY LINE
+        <script type="module" src="/src/main.jsx"></script>  ← Loads your React code
+      </body>
+    </html>
+
+THE MOST IMPORTANT LINE:
+    <div id="root"></div>
+
+This is an EMPTY div. React will inject your entire app INSIDE this div.
+When the page loads, this div starts empty. React fills it up with your
+components.
+
+You almost NEVER need to modify index.html. React handles everything else.
+
+--------------------------------------------------------------------------------
+14. main.jsx
+--------------------------------------------------------------------------------
+
+main.jsx is the ENTRY POINT of your React application. It's the first file
+React runs. Its job is to:
+  1. Import React
+  2. Import ReactDOM
+  3. Import your App component
+  4. Connect React to the index.html <div id="root">
+
+DEFAULT main.jsx (from Vite):
+
+    import { StrictMode } from 'react'
+    import { createRoot } from 'react-dom/client'
+    import './index.css'
+    import App from './App.jsx'
+
+    createRoot(document.getElementById('root')).render(
+      <StrictMode>
+        <App />
+      </StrictMode>,
+    )
+
+WHAT EACH LINE DOES:
+
+  Line 1: import { StrictMode } from 'react'
+    → Imports React's StrictMode (helps catch bugs in development)
+
+  Line 2: import { createRoot } from 'react-dom/client'
+    → Imports the function that connects React to the browser DOM
+
+  Line 3: import './index.css'
+    → Imports global CSS styles
+
+  Line 4: import App from './App.jsx'
+    → Imports your main App component
+
+  Line 6-9: The main logic (see sections below)
+
+SIMPLIFIED VERSION (easier to understand):
+
+    import { createRoot } from 'react-dom/client'
+    import App from './App.jsx'
+
+    const rootElement = document.getElementById('root')
+    const root = createRoot(rootElement)
+    root.render(<App />)
+
+--------------------------------------------------------------------------------
+15. createRoot()
+--------------------------------------------------------------------------------
+
+WHAT IS createRoot()?
+  createRoot() is a React function that takes a real DOM element (from index.html)
+  and creates a React "root" — a connection point where React will manage the UI.
+
+  Think of it like: "Hey React, here's the door (div#root). You're in charge
+  of everything inside it!"
+
+SYNTAX:
+
+    import { createRoot } from 'react-dom/client'
+
+    const root = createRoot(document.getElementById('root'))
+
+HOW IT WORKS STEP BY STEP:
+
+  Step 1: document.getElementById('root')
+    → JavaScript grabs the <div id="root"> from index.html
+
+  Step 2: createRoot(...)
+    → React takes control of that div and returns a "root" object
+
+  Step 3: root.render(...)
+    → React renders your component tree inside that div
+
+PRACTICAL BREAKDOWN:
+
+    // Grab the empty div from HTML
+    const container = document.getElementById('root')
+
+    // Give React control over that div
+    const root = createRoot(container)
+
+    // Tell React what to show inside it
+    root.render(<App />)
+
+createRoot() is the React 18+ way (introduced in React 18).
+Older apps used ReactDOM.render() — now deprecated.
+
+--------------------------------------------------------------------------------
+16. render()
+--------------------------------------------------------------------------------
+
+WHAT IS render()?
+  render() is a method on the root object (returned by createRoot()).
+  It takes your JSX (a component) and paints it to the screen inside the root div.
+
+  In simple terms: render() = "Show this on the screen"
+
+SYNTAX:
+
+    root.render(<App />)
+
+WHAT HAPPENS WHEN render() IS CALLED:
+  1. React takes your <App /> component
+  2. Converts the JSX to real HTML
+  3. Injects that HTML into the <div id="root"> in index.html
+  4. The user sees your React app!
+
+EXAMPLE:
+
+    import { createRoot } from 'react-dom/client'
+
+    function Hello() {
+      return <h1>Hello, React!</h1>
+    }
+
+    const root = createRoot(document.getElementById('root'))
+    root.render(<Hello />)
+
+  The browser now shows: Hello, React!
+
+RE-RENDERING:
+  When data changes, React automatically calls render internally to update
+  only what changed. You don't manually call render() again.
+
+NOTE ON StrictMode:
+  In the default Vite setup, <App /> is wrapped in <StrictMode>:
+
+    root.render(
+      <StrictMode>
+        <App />
+      </StrictMode>
+    )
+
+  StrictMode is a React tool that:
+  - Runs certain checks only in development
+  - Warns you about deprecated APIs
+  - Intentionally renders components TWICE to detect side effects
+  - Has NO effect in the production build
+
+--------------------------------------------------------------------------------
+17. ReactDOM
+--------------------------------------------------------------------------------
+
+WHAT IS ReactDOM?
+  React is split into two packages:
+
+  1. react          → The core library (creating components, JSX, hooks, etc.)
+  2. react-dom      → The bridge between React and the browser's DOM
+
+  ReactDOM contains the tools for rendering React components into a web page.
+  There's also react-native for mobile — same React, different "renderer".
+
+  ┌──────────────────────────────────────────────────────────┐
+  │                   Your React App                         │
+  │                (Components, JSX, Hooks)                  │
+  └───────────────────────┬──────────────────────────────────┘
+                          │
+                     react-dom
+                          │
+              ┌───────────▼───────────┐
+              │    Browser DOM        │
+              │  <div id="root">      │
+              │    <h1>Hello</h1>     │
+              └───────────────────────┘
+
+IMPORTING REACTDOM:
+
+  Modern way (React 18+):
+    import { createRoot } from 'react-dom/client'
+
+  Old way (React 17 and below - deprecated):
+    import ReactDOM from 'react-dom'
+    ReactDOM.render(<App />, document.getElementById('root'))
+
+  Always use the modern way with createRoot in new projects!
+
+SUMMARY TABLE:
+  ┌─────────────┬──────────────────────────────────────────────────┐
+  │ Package     │ What it does                                     │
+  ├─────────────┼──────────────────────────────────────────────────┤
+  │ react       │ Core: Components, JSX, hooks (useState, etc.)    │
+  │ react-dom   │ Browser rendering: createRoot, render, portals   │
+  │ react-native│ Mobile rendering: iOS, Android                   │
+  └─────────────┴──────────────────────────────────────────────────┘
+
+--------------------------------------------------------------------------------
+18. import / export default / Named Exports
+--------------------------------------------------------------------------------
+
+In React, every component lives in its own file. We use JavaScript's module
+system (import/export) to share code between files.
+
+─────────────────────────────────
+A. export default
+─────────────────────────────────
+
+  export default is used when a file has ONE main thing to export.
+  A file can only have ONE default export.
+
+  HOW TO EXPORT:
+
+    // Button.jsx
+    function Button() {
+      return <button>Click Me</button>;
+    }
+
+    export default Button;
+
+  SHORTCUT (export inline):
+
+    // Button.jsx
+    export default function Button() {
+      return <button>Click Me</button>;
+    }
+
+  HOW TO IMPORT:
+
+    // App.jsx
+    import Button from './Button';    ← No curly braces needed!
+
+  IMPORTANT: With default exports, you can rename it on import:
+
+    import MyButton from './Button';  ← This also works!
+    import Btn from './Button';       ← This also works!
+
+─────────────────────────────────
+B. Named Exports
+─────────────────────────────────
+
+  Named exports are used when a file exports MULTIPLE things.
+  You can have MANY named exports in one file.
+
+  HOW TO EXPORT:
+
+    // utils.js
+    export function add(a, b) {
+      return a + b;
+    }
+
+    export function subtract(a, b) {
+      return a - b;
+    }
+
+    export const PI = 3.14159;
+
+  HOW TO IMPORT (use curly braces { }):
+
+    // App.jsx
+    import { add, subtract, PI } from './utils';
+
+  RENAME ON IMPORT (using "as"):
+
+    import { add as addition } from './utils';
+
+─────────────────────────────────
+C. Combining Default + Named Exports
+─────────────────────────────────
+
+  A file can have ONE default export AND multiple named exports:
+
+    // MathUtils.js
+    export const PI = 3.14;
+    export const E = 2.718;
+
+    export default function multiply(a, b) {
+      return a * b;
+    }
+
+  Import both:
+
+    import multiply, { PI, E } from './MathUtils';
+
+─────────────────────────────────
+D. Importing from npm packages
+─────────────────────────────────
+
+  Same syntax, but no "./" path (comes from node_modules):
+
+    import { createRoot } from 'react-dom/client'   ← named import from npm
+    import { useState } from 'react'                ← named import from npm
+    import App from './App'                         ← default import from your file
+
+─────────────────────────────────
+E. FULL PRACTICAL EXAMPLE
+─────────────────────────────────
+
+  Let's build a mini-app with multiple components:
+
+  // Greeting.jsx
+  export default function Greeting() {
+    return <h1>Hello, Student! 👋</h1>;
+  }
+
+  // Footer.jsx
+  export default function Footer() {
+    return <footer>© 2024 React Class</footer>;
+  }
+
+  // helpers.js
+  export function formatName(name) {
+    return name.toUpperCase();
+  }
+
+  export const COURSE_NAME = "React Basics";
+
+  // App.jsx
+  import Greeting from './Greeting';
+  import Footer from './Footer';
+  import { formatName, COURSE_NAME } from './helpers';
+
+  export default function App() {
+    return (
+      <>
+        <Greeting />
+        <p>Course: {COURSE_NAME}</p>
+        <p>Student: {formatName("alice")}</p>
+        <Footer />
+      </>
+    );
+  }
+
+  Output:
+    Hello, Student! 👋
+    Course: React Basics
+    Student: ALICE
+    © 2024 React Class
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │  IMPORT/EXPORT CHEAT SHEET                                  │
+  ├────────────────────────┬────────────────────────────────────┤
+  │ Export Type            │ Import Syntax                      │
+  ├────────────────────────┼────────────────────────────────────┤
+  │ export default Foo     │ import Foo from './file'           │
+  │ export default Foo     │ import Bar from './file' (renamed) │
+  │ export function Foo    │ import { Foo } from './file'       │
+  │ export const x = 1    │ import { x } from './file'         │
+  │ Both default + named   │ import Foo, { x } from './file'   │
+  └────────────────────────┴────────────────────────────────────┘
+
+================================================================================
+                         🚀 PUTTING IT ALL TOGETHER
+================================================================================
+
+Here is a complete React app using EVERYTHING from Day 1:
+
+  File: index.html (auto-generated, don't modify)
+  ─────────────────
+    <div id="root"></div>
+
+  File: src/helpers.js
+  ─────────────────────
+    export function getGreeting(name) {
+      return `Hello, ${name.toUpperCase()}!`;
+    }
+
+    export const TOPICS = ["Components", "JSX", "Fragments", "Expressions"];
+
+  File: src/TopicList.jsx
+  ────────────────────────
+    export default function TopicList({ topics }) {
+      return (
+        <>
+          <h2>Today's Topics</h2>
+          <ul>
+            {topics.map((topic) => (
+              <li key={topic}>{topic}</li>
+            ))}
+          </ul>
+        </>
+      );
+    }
+
+  File: src/App.jsx
+  ──────────────────
+    import { getGreeting, TOPICS } from './helpers';
+    import TopicList from './TopicList';
+
+    export default function App() {
+      const studentName = "Alice";
+      const isFirstDay = true;
+
+      return (
+        <div className="app">
+          <h1>{getGreeting(studentName)}</h1>
+          <p>{isFirstDay ? "Welcome to your first React class!" : "Welcome back!"}</p>
+          <TopicList topics={TOPICS} />
+        </div>
+      );
+    }
+
+  File: src/main.jsx
+  ───────────────────
+    import { createRoot } from 'react-dom/client';
+    import App from './App';
+
+    createRoot(document.getElementById('root')).render(<App />);
+
+  RESULT IN BROWSER:
+    Hello, ALICE!
+    Welcome to your first React class!
+    Today's Topics:
+      • Components
+      • JSX
+      • Fragments
+      • Expressions
+
+================================================================================
+                              📝 DAY 1 SUMMARY
+================================================================================
+
+  CONCEPT              WHAT IT IS
+  ───────────────────────────────────────────────────────────────────────────
+  Why React?           UI library by Meta. Component-based, fast, reusable.
+  SPA vs MPA           SPA = no page reload. MPA = full page reload per click.
+  Library vs Framework React is a library (you're in control).
+  Node.js              Runs JavaScript on your computer (outside browser).
+  npm                  Package manager. Install, remove, manage JS packages.
+  Vite                 Fast build tool + dev server. Replaces Create React App.
+  Project Structure    src/ = your code. main.jsx = entry. App.jsx = root UI.
+  Components           Reusable UI pieces. Must start with Capital letter.
+  JSX                  HTML-like syntax inside JavaScript.
+  JSX Rules            One root, close all tags, className, camelCase attrs.
+  Fragments            <> </> wrapper with no extra DOM element.
+  Expressions in JSX   { } = any JS expression (variables, math, ternary).
+  index.html           One HTML file with <div id="root">.
+  main.jsx             Entry point. Connects React to index.html.
+  createRoot()         Gives React control over div#root.
+  render()             Paints your component to the screen.
+  ReactDOM             Bridge between React and the browser DOM.
+  import               Brings in code from another file or package.
+  export default       One main export per file. Import without { }.
+  Named Exports        Multiple exports per file. Import with { }.
+
+================================================================================
+                      🏠 HOMEWORK AFTER DAY 1
+================================================================================
+
+  1. Install Node.js from https://nodejs.org (LTS version)
+  2. Create a Vite + React project:
+       npm create vite@latest my-first-app -- --template react
+       cd my-first-app
+       npm install
+       npm run dev
+  3. Open App.jsx and change the content to show YOUR name.
+  4. Create a new file called Greeting.jsx with a Greeting component.
+  5. Import and use Greeting inside App.jsx.
+  6. Try using expressions in JSX: show today's date, some math, a ternary.
+
+================================================================================
+                    END OF DAY 1 - GREAT JOB! 🎉
+================================================================================
