@@ -1,0 +1,1143 @@
+================================================================================
+                   DAY 3 - EVENTS, STATE & FORMS IN REACT
+              Beginner-Friendly Guide with Practical Examples
+================================================================================
+
+This is where React becomes truly INTERACTIVE.
+By the end of Day 3, you will build a full Registration Form — the most
+important beginner project in React.
+
+WHAT WE COVER TODAY:
+  1.  Events — What are they?
+  2.  Event Handlers in React
+  3.  onClick — Handling Clicks
+  4.  Function Reference vs Function Call
+  5.  Why Normal Variables Don't Update the UI
+  6.  useState — React's Memory System
+  7.  State Updates — Reading and Writing State
+  8.  Functional Updates — The Safe Way to Update State
+  9.  onChange — Tracking User Input
+  10. Controlled Components — React Controls the Input
+  11. Forms — onSubmit & preventDefault()
+  12. 🎯 Final Project: Registration Form
+
+================================================================================
+1. EVENTS — WHAT ARE THEY?
+================================================================================
+
+Events are things that HAPPEN in the browser — usually triggered by the user.
+
+COMMON EVENTS:
+  - User clicks a button         → click event
+  - User types in an input       → change event
+  - User submits a form          → submit event
+  - User hovers over an element  → mouseover event
+  - User presses a key           → keydown / keyup event
+
+In plain HTML, you handle events like this:
+
+    <button onclick="alert('Clicked!')">Click Me</button>
+
+In React, events work similarly but with key differences:
+
+  1. Event names are camelCase:  onclick → onClick,  onchange → onChange
+  2. You pass a FUNCTION, not a string
+
+  PLAIN HTML:   <button onclick="doSomething()">Click</button>
+  REACT JSX:    <button onClick={doSomething}>Click</button>
+
+================================================================================
+2. EVENT HANDLERS IN REACT
+================================================================================
+
+An event handler is just a FUNCTION that runs when an event happens.
+
+HOW TO WRITE AN EVENT HANDLER:
+
+    function App() {
+
+      // This is the event handler function
+      function handleClick() {
+        alert("Button was clicked!");
+      }
+
+      return (
+        <button onClick={handleClick}>Click Me</button>
+      );
+    }
+
+THE EVENT OBJECT:
+  Every event handler automatically receives an EVENT OBJECT as its first
+  argument. It contains information about what happened.
+
+    function handleClick(event) {
+      console.log(event.type);     // "click"
+      console.log(event.target);   // the element that was clicked
+    }
+
+    <button onClick={handleClick}>Click Me</button>
+
+  For input events, the event object gives you the input value:
+
+    function handleChange(event) {
+      console.log(event.target.value);   // Whatever the user typed
+    }
+
+    <input onChange={handleChange} />
+
+COMMON REACT EVENTS:
+  ┌──────────────────┬────────────────────────────────────────────┐
+  │ React Event      │ When it fires                              │
+  ├──────────────────┼────────────────────────────────────────────┤
+  │ onClick          │ User clicks an element                     │
+  │ onChange         │ Input value changes                        │
+  │ onSubmit         │ Form is submitted                          │
+  │ onKeyDown        │ User presses a key down                    │
+  │ onKeyUp          │ User releases a key                        │
+  │ onFocus          │ Input gains focus                          │
+  │ onBlur           │ Input loses focus                          │
+  │ onMouseEnter     │ Mouse enters an element                    │
+  │ onMouseLeave     │ Mouse leaves an element                    │
+  └──────────────────┴────────────────────────────────────────────┘
+
+================================================================================
+3. onClick — HANDLING CLICKS
+================================================================================
+
+onClick is the most common event in React. It fires when the user clicks
+an element.
+
+BASIC EXAMPLE:
+
+    function App() {
+      function sayHello() {
+        alert("Hello, Student!");
+      }
+
+      return <button onClick={sayHello}>Say Hello</button>;
+    }
+
+INLINE ARROW FUNCTION (for simple one-liners):
+
+    function App() {
+      return (
+        <button onClick={() => alert("Hello!")}>Say Hello</button>
+      );
+    }
+
+LOGGING TO CONSOLE:
+
+    function App() {
+      function handleClick() {
+        console.log("Button clicked at:", new Date().toLocaleTimeString());
+      }
+
+      return <button onClick={handleClick}>Log Time</button>;
+    }
+
+CLICKING DIFFERENT ELEMENTS:
+
+    function App() {
+      return (
+        <div>
+          <h1 onClick={() => alert("Title clicked!")}>Click the Title</h1>
+          <p onClick={() => console.log("Paragraph clicked!")}>Click the Paragraph</p>
+          <img
+            src="https://via.placeholder.com/100"
+            onClick={() => alert("Image clicked!")}
+            alt="click me"
+          />
+        </div>
+      );
+    }
+
+  ANY HTML element can have onClick — not just buttons!
+
+================================================================================
+4. FUNCTION REFERENCE vs FUNCTION CALL
+================================================================================
+
+This is one of the most common beginner mistakes in React. Pay close attention!
+
+─────────────────────────────────
+FUNCTION REFERENCE (✅ CORRECT)
+─────────────────────────────────
+
+    function sayHello() {
+      alert("Hello!");
+    }
+
+    <button onClick={sayHello}>Click</button>
+    //                ^^^^^^^^ No parentheses!
+
+  Here, onClick={sayHello} means: "When clicked, CALL this function."
+  React stores the function and calls it LATER when the click happens.
+  The function runs ONLY when the button is clicked.
+
+─────────────────────────────────
+FUNCTION CALL (❌ WRONG for events)
+─────────────────────────────────
+
+    <button onClick={sayHello()}>Click</button>
+    //                ^^^^^^^^^^^ With parentheses!
+
+  Here, sayHello() runs IMMEDIATELY when the component renders (before any click).
+  This is almost never what you want!
+
+ANALOGY:
+  onClick={sayHello}    → "Call the pizza place WHEN I'm hungry."
+  onClick={sayHello()}  → "Call the pizza place RIGHT NOW (before I'm hungry)."
+
+SIDE BY SIDE:
+
+    // ❌ WRONG - runs immediately on render
+    <button onClick={alert("Clicked!")}>Click Me</button>
+
+    // ✅ CORRECT - runs only when clicked
+    <button onClick={() => alert("Clicked!")}>Click Me</button>
+
+    // ❌ WRONG
+    <button onClick={doSomething()}>Click</button>
+
+    // ✅ CORRECT
+    <button onClick={doSomething}>Click</button>
+
+PASSING ARGUMENTS:
+  What if you need to pass an argument to the handler?
+  Then you MUST use an arrow function wrapper:
+
+    function greet(name) {
+      alert(`Hello, ${name}!`);
+    }
+
+    // ✅ Wrap in arrow function to pass an argument
+    <button onClick={() => greet("Alice")}>Greet Alice</button>
+    <button onClick={() => greet("Bob")}>Greet Bob</button>
+
+  Why? Because onClick={greet("Alice")} would call greet immediately.
+  By wrapping: onClick={() => greet("Alice")}, we delay it until clicked.
+
+REFERENCE vs CALL SUMMARY:
+  ┌────────────────────────────────┬────────────────────────────────────────┐
+  │ Syntax                         │ When does it run?                      │
+  ├────────────────────────────────┼────────────────────────────────────────┤
+  │ onClick={handleClick}          │ On click (correct!)                    │
+  │ onClick={handleClick()}        │ Immediately on render (wrong!)         │
+  │ onClick={() => handleClick()}  │ On click (correct, with arrow fn)      │
+  │ onClick={() => greet("Alice")} │ On click with argument (correct!)      │
+  └────────────────────────────────┴────────────────────────────────────────┘
+
+================================================================================
+5. WHY NORMAL VARIABLES DON'T UPDATE THE UI
+================================================================================
+
+This is the most important concept in all of React. Understanding WHY
+state exists requires understanding what happens WITHOUT it.
+
+EXPERIMENT — Try this and click the button:
+
+    function Counter() {
+      let count = 0;           // ← normal variable
+
+      function increment() {
+        count = count + 1;     // ← updating the variable
+        console.log(count);    // ← count DOES increase in the console
+      }
+
+      return (
+        <div>
+          <p>Count: {count}</p>
+          <button onClick={increment}>+1</button>
+        </div>
+      );
+    }
+
+WHAT YOU EXPECT: The number on screen increases when you click +1.
+WHAT ACTUALLY HAPPENS: The screen NEVER updates. Always shows 0.
+
+But in the console, count IS increasing. So why doesn't the UI update?
+
+WHY THE UI DOESN'T UPDATE:
+  React renders your component once and displays the JSX.
+  React does NOT watch your normal variables for changes.
+  When count changes, React doesn't know about it.
+  React has NO reason to re-render the component.
+  So the old JSX (with count = 0) stays on screen.
+
+ANALOGY:
+  Imagine you write a word on a whiteboard.
+  You erase the word in your HEAD (your variable changes),
+  but you never physically touch the whiteboard.
+  The whiteboard still shows the old word.
+
+  React is the whiteboard. Normal variables are your head.
+  React doesn't know your thoughts — you have to explicitly tell it.
+
+SOLUTION: Use useState. This tells React: "I have data that can change,
+and when it changes, please re-render the component."
+
+================================================================================
+6. useState — REACT'S MEMORY SYSTEM
+================================================================================
+
+useState is React's way of remembering data that can change over time.
+When you update state, React automatically re-renders the component with
+the new data.
+
+IMPORTING useState:
+
+    import { useState } from 'react';
+
+SYNTAX:
+
+    const [value, setValue] = useState(initialValue);
+
+  - value      → the current state value (what you read)
+  - setValue   → the function to update it (what you call to change it)
+  - initialValue → the starting value (only used on first render)
+
+This uses JavaScript array destructuring. useState returns an array of
+two things: [currentValue, updateFunction].
+
+NAMING CONVENTION:
+  The update function is always named "set" + the variable name:
+    count → setCount
+    name  → setName
+    isOpen → setIsOpen
+
+SIMPLE COUNTER WITH useState:
+
+    import { useState } from 'react';
+
+    function Counter() {
+      const [count, setCount] = useState(0);   // start at 0
+
+      function increment() {
+        setCount(count + 1);    // tell React to update count
+      }
+
+      function decrement() {
+        setCount(count - 1);
+      }
+
+      function reset() {
+        setCount(0);
+      }
+
+      return (
+        <div>
+          <h1>Count: {count}</h1>
+          <button onClick={decrement}>-1</button>
+          <button onClick={reset}>Reset</button>
+          <button onClick={increment}>+1</button>
+        </div>
+      );
+    }
+
+NOW when you click +1:
+  1. setCount(count + 1) is called
+  2. React updates the state
+  3. React RE-RENDERS the component with the new count
+  4. The screen updates!
+
+WHAT HAPPENS DURING RE-RENDER:
+  - React calls the Counter function again
+  - useState(0) is called again, but now returns the UPDATED count
+  - The new JSX is generated with the new count value
+  - React updates only what changed in the real DOM
+
+MULTIPLE STATE VARIABLES:
+  You can have as many useState calls as you need:
+
+    function UserProfile() {
+      const [name, setName] = useState("Alice");
+      const [age, setAge] = useState(20);
+      const [isOnline, setIsOnline] = useState(false);
+
+      return (
+        <div>
+          <p>Name: {name}</p>
+          <p>Age: {age}</p>
+          <p>Status: {isOnline ? "🟢 Online" : "🔴 Offline"}</p>
+          <button onClick={() => setIsOnline(!isOnline)}>
+            Toggle Status
+          </button>
+        </div>
+      );
+    }
+
+STATE WITH DIFFERENT TYPES:
+
+    // String state
+    const [name, setName] = useState("");
+    const [message, setMessage] = useState("Hello");
+
+    // Number state
+    const [count, setCount] = useState(0);
+    const [price, setPrice] = useState(9.99);
+
+    // Boolean state
+    const [isVisible, setIsVisible] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    // Array state
+    const [items, setItems] = useState([]);
+    const [fruits, setFruits] = useState(["Apple", "Banana"]);
+
+    // Object state
+    const [user, setUser] = useState({ name: "", email: "" });
+
+================================================================================
+7. STATE UPDATES — READING AND WRITING STATE
+================================================================================
+
+─────────────────────────────────
+READING STATE
+─────────────────────────────────
+
+  Just use the variable name:
+
+    const [count, setCount] = useState(0);
+
+    <p>The count is: {count}</p>         ← reading
+    <p>Double: {count * 2}</p>           ← using in expressions
+
+─────────────────────────────────
+WRITING (UPDATING) STATE
+─────────────────────────────────
+
+  Call the setter function with the new value:
+
+    setCount(5);           // set to exactly 5
+    setCount(count + 1);   // increment by 1
+    setName("Bob");        // update a string
+    setIsOpen(true);       // set boolean
+    setIsOpen(!isOpen);    // toggle boolean
+
+─────────────────────────────────
+UPDATING OBJECT STATE
+─────────────────────────────────
+
+  When state is an object, you must update the WHOLE object.
+  Use the spread operator (...) to copy the existing fields:
+
+    const [user, setUser] = useState({ name: "Alice", age: 20 });
+
+    // ❌ WRONG — directly mutating state
+    user.name = "Bob";    // React doesn't see this change!
+
+    // ✅ CORRECT — create a new object with spread
+    setUser({ ...user, name: "Bob" });
+    // This creates: { name: "Bob", age: 20 }
+
+    // ✅ Update multiple fields
+    setUser({ ...user, name: "Bob", age: 21 });
+
+─────────────────────────────────
+UPDATING ARRAY STATE
+─────────────────────────────────
+
+  Never mutate the array directly. Create a new one:
+
+    const [fruits, setFruits] = useState(["Apple", "Banana"]);
+
+    // ❌ WRONG
+    fruits.push("Cherry");    // React doesn't see this!
+
+    // ✅ CORRECT — add item
+    setFruits([...fruits, "Cherry"]);
+
+    // ✅ CORRECT — remove item
+    setFruits(fruits.filter((fruit) => fruit !== "Banana"));
+
+─────────────────────────────────
+IMPORTANT: State is ASYNCHRONOUS
+─────────────────────────────────
+
+  React batches state updates for performance. The state doesn't change
+  INSTANTLY — it changes on the NEXT render.
+
+  EXAMPLE OF THE TRAP:
+
+    const [count, setCount] = useState(0);
+
+    function handleClick() {
+      setCount(count + 1);
+      setCount(count + 1);
+      setCount(count + 1);
+      // You might expect count to be 3 after this.
+      // But count is still 0 in this render, so all three calls
+      // do: setCount(0 + 1) = setCount(1). Result: count = 1!
+    }
+
+  This is exactly why FUNCTIONAL UPDATES exist (see next section).
+
+================================================================================
+8. FUNCTIONAL UPDATES — THE SAFE WAY TO UPDATE STATE
+================================================================================
+
+WHAT IS A FUNCTIONAL UPDATE?
+  Instead of passing a VALUE to the setter, you pass a FUNCTION.
+  React calls that function with the LATEST state as the argument.
+
+SYNTAX:
+
+    // Normal update:
+    setCount(count + 1);
+
+    // Functional update:
+    setCount((prevCount) => prevCount + 1);
+
+  prevCount (or prev, or whatever you name it) is ALWAYS the most recent
+  state value — guaranteed by React, even if many updates are queued.
+
+WHY setCount(count + 1) CAN FAIL:
+
+    const [count, setCount] = useState(0);
+
+    function incrementThreeTimes() {
+      setCount(count + 1);  // count is 0 → sets to 1
+      setCount(count + 1);  // count is STILL 0 → sets to 1 again!
+      setCount(count + 1);  // count is STILL 0 → sets to 1 again!
+    }
+    // Final result: count = 1 (not 3!)
+
+WHY setCount(prev => prev + 1) ALWAYS WORKS:
+
+    function incrementThreeTimes() {
+      setCount((prev) => prev + 1);  // prev=0 → 1
+      setCount((prev) => prev + 1);  // prev=1 → 2
+      setCount((prev) => prev + 1);  // prev=2 → 3
+    }
+    // Final result: count = 3 ✅
+
+  React processes these one by one, passing the latest value each time.
+
+RULE OF THUMB:
+  - If the new state DEPENDS ON the old state → use functional update
+  - If the new state does NOT depend on old state → either works
+
+  // Depends on old state → use functional update
+  setCount((prev) => prev + 1);
+  setItems((prev) => [...prev, newItem]);
+  setIsOpen((prev) => !prev);
+
+  // Does not depend on old state → either works
+  setName("Alice");
+  setCount(0);
+  setIsLoading(true);
+
+PRACTICAL EXAMPLE — Like Button:
+
+   import React, { useState } from "react";
+
+const App = () => {
+  const [likes, setLikes] = useState(0);
+  const [liked, setLiked] = useState(false);
+
+  function handleLike() {
+    if (liked) {
+      setLikes((prev) => prev - 1);
+      setLiked(false);
+    } else {
+      setLikes((prev) => prev + 1);
+      setLiked(true);
+    }
+  }
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <button
+        onClick={handleLike}
+        className="px-6 py-3 bg-white rounded-lg shadow-lg text-xl font-semibold hover:shadow-xl transition duration-300"
+      >
+        {liked ? "❤️" : "🤍"} {likes} Likes
+      </button>
+    </div>
+  );
+};
+
+export default App;
+
+
+================================================================================
+9. onChange — TRACKING USER INPUT
+================================================================================
+
+onChange fires every time the value of an input changes (every keystroke).
+
+BASIC EXAMPLE:
+
+    import { useState } from 'react';
+
+    function NameInput() {
+      const [name, setName] = useState("");
+
+      function handleChange(event) {
+        setName(event.target.value);   // event.target is the input element
+      }
+
+      return (
+        <div>
+          <input
+            type="text"
+            onChange={handleChange}
+            placeholder="Type your name..."
+          />
+          <p>You typed: {name}</p>
+        </div>
+      );
+    }
+
+  As you type each letter, the paragraph updates instantly.
+
+SHORTHAND WITH INLINE ARROW FUNCTION:
+
+    <input
+      type="text"
+      onChange={(e) => setName(e.target.value)}
+      placeholder="Type your name..."
+    />
+
+HANDLING DIFFERENT INPUT TYPES:
+
+    // Text input
+    <input type="text" onChange={(e) => setName(e.target.value)} />
+
+    // Number input
+    <input type="number" onChange={(e) => setAge(Number(e.target.value))} />
+
+    // Checkbox
+    <input type="checkbox" onChange={(e) => setAgreed(e.target.checked)} />
+    //                                                   ^^^^^^^ not .value!
+
+    // Select (dropdown)
+    <select onChange={(e) => setDept(e.target.value)}>
+      <option value="cs">Computer Science</option>
+      <option value="se">Software Engineering</option>
+    </select>
+
+    // Radio button
+    <input
+      type="radio"
+      name="gender"
+      value="male"
+      onChange={(e) => setGender(e.target.value)}
+    />
+
+================================================================================
+10. CONTROLLED COMPONENTS
+================================================================================
+
+WHAT IS A CONTROLLED COMPONENT?
+  A controlled component is an input whose VALUE is controlled by React state.
+  React is the "single source of truth" for the input's value.
+
+UNCONTROLLED (React doesn't know what's in the input):
+
+    <input type="text" />
+    // React has no idea what the user typed
+
+CONTROLLED (React always knows the current value):
+
+    const [name, setName] = useState("");
+
+    <input
+      type="text"
+      value={name}                              // ← React controls the value
+      onChange={(e) => setName(e.target.value)} // ← React updates on change
+    />
+
+THE TWO REQUIREMENTS FOR A CONTROLLED INPUT:
+  1. value={stateVariable}             → bind the input to state
+  2. onChange={updateStateFunction}    → update state when it changes
+
+WHY USE CONTROLLED COMPONENTS?
+  - You always know the current value (stored in state)
+  - Easy to validate (check the value before allowing it)
+  - Easy to reset the form (just reset the state)
+  - Easy to show the value elsewhere (live preview!)
+
+COMPARISON:
+
+  ┌──────────────────────┬────────────────────────────┬──────────────────────────────┐
+  │ Feature              │ Uncontrolled               │ Controlled                   │
+  ├──────────────────────┼────────────────────────────┼──────────────────────────────┤
+  │ Value stored in      │ DOM (the input itself)     │ React state                  │
+  │ How to get value     │ ref.current.value          │ state variable               │
+  │ React awareness      │ React doesn't know         │ React always knows           │
+  │ Validation           │ Hard                       │ Easy                         │
+  │ Resetting            │ Requires DOM manipulation  │ Just reset state             │
+  │ Recommended?         │ Only for file inputs       │ Yes, for most inputs         │
+  └──────────────────────┴────────────────────────────┴──────────────────────────────┘
+
+LIVE PREVIEW EXAMPLE (shows why controlled is powerful):
+
+   import { useState } from "react";
+
+function App() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    console.log(formData);
+
+    alert(`
+Email: ${formData.email}
+Password: ${formData.password}
+    `);
+  }
+
+  return (
+    <div className="min-h-screen flex justify-center items-center bg-gray-100">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-lg shadow-lg w-96"
+      >
+        <h1 className="text-3xl font-bold text-center mb-6">
+          Login Form
+        </h1>
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Enter Email"
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full border p-3 rounded mb-4"
+        />
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Enter Password"
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full border p-3 rounded mb-4"
+        />
+
+        <button
+          className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700"
+        >
+          Login
+        </button>
+
+        <div className="mt-6 border-t pt-4">
+          <h2 className="font-bold mb-2">Live Preview</h2>
+
+          <p>Email: {formData.email}</p>
+          <p>Password: {formData.password}</p>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export default App;
+
+
+================================================================================
+11. FORMS — onSubmit & preventDefault()
+================================================================================
+
+HANDLING FORM SUBMISSION:
+  In HTML, submitting a form reloads the page by default.
+  In React, we PREVENT the default behavior and handle it ourselves.
+
+    function handleSubmit(event) {
+      event.preventDefault();   // ← STOPS the page from reloading
+      // Now handle the data your way
+    }
+
+    <form onSubmit={handleSubmit}>
+      ...inputs...
+      <button type="submit">Submit</button>
+    </form>
+
+WHY event.preventDefault()?
+  Without it, the form would reload the page, losing all your state.
+  With it, React stays in control.
+
+SIMPLE FORM EXAMPLE:
+
+    import { useState } from 'react';
+
+    function LoginForm() {
+      const [email, setEmail] = useState("");
+      const [password, setPassword] = useState("");
+
+      function handleSubmit(event) {
+        event.preventDefault();
+        console.log("Email:", email);
+        console.log("Password:", password);
+        alert(`Logging in as ${email}`);
+      }
+
+      return (
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>Email:</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+            />
+          </div>
+          <div>
+            <label>Password:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+            />
+          </div>
+          <button type="submit">Log In</button>
+        </form>
+      );
+    }
+
+USING A SINGLE STATE OBJECT FOR FORMS (advanced but clean):
+  Instead of one useState per field, use an object:
+
+    const [formData, setFormData] = useState({
+      name: "",
+      email: "",
+      password: "",
+    });
+
+    function handleChange(event) {
+      const { name, value } = event.target;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,        // ← [name] is dynamic key from input's name attribute
+      }));
+    }
+
+    <input name="name"  value={formData.name}  onChange={handleChange} />
+    <input name="email" value={formData.email} onChange={handleChange} />
+
+  One handleChange function handles ALL inputs!
+
+================================================================================
+12. 🎯 FINAL PROJECT: REGISTRATION FORM
+================================================================================
+
+We will build a COMPLETE Registration Form that uses everything from Day 3:
+  - useState for all form fields
+  - onChange for controlled inputs
+  - Checkboxes, Radio buttons, Dropdowns, Text inputs, Password
+  - onSubmit with preventDefault
+  - Live preview of entered data
+  - Basic validation
+
+
+
+
+import { useState } from "react";
+
+function RegistrationForm() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    gender: "",
+    department: "",
+    skills: [],
+  });
+
+  const [submittedData, setSubmittedData] = useState(null);
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  }
+
+  function handleSkillChange(skill) {
+    if (formData.skills.includes(skill)) {
+      setFormData({
+        ...formData,
+        skills: formData.skills.filter((item) => item !== skill),
+      });
+    } else {
+      setFormData({
+        ...formData,
+        skills: [...formData.skills, skill],
+      });
+    }
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.password ||
+      !formData.gender ||
+      !formData.department ||
+      formData.skills.length === 0
+    ) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    setSubmittedData(formData);
+
+  }
+
+  return (
+    <div className="min-h-screen flex justify-center items-center bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-[450px]">
+
+        <h1 className="text-2xl font-bold text-center mb-6">
+          Student Registration
+        </h1>
+
+        <form onSubmit={handleSubmit}>
+
+          <input
+            className="w-full border p-2 rounded mb-4"
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            value={formData.name}
+            onChange={handleChange}
+          />
+
+          <input
+            className="w-full border p-2 rounded mb-4"
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+
+          <input
+            className="w-full border p-2 rounded mb-4"
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+
+          <div className="mb-4">
+            <p className="font-semibold">Gender</p>
+
+            <label className="mr-4">
+              <input
+                type="radio"
+                name="gender"
+                value="Male"
+                checked={formData.gender === "Male"}
+                onChange={handleChange}
+              />
+              {" "}Male
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="Female"
+                checked={formData.gender === "Female"}
+                onChange={handleChange}
+              />
+              {" "}Female
+            </label>
+          </div>
+
+          <select
+            className="w-full border p-2 rounded mb-4"
+            name="department"
+            value={formData.department}
+            onChange={handleChange}
+          >
+            <option value="">Select Department</option>
+            <option>Computer Science</option>
+            <option>Software Engineering</option>
+            <option>Data Science</option>
+          </select>
+
+          <div className="mb-4">
+            <p className="font-semibold">Skills</p>
+
+            <label className="block">
+              <input
+                type="checkbox"
+                checked={formData.skills.includes("React")}
+                onChange={() => handleSkillChange("React")}
+              />
+              {" "}React
+            </label>
+
+            <label className="block">
+              <input
+                type="checkbox"
+                checked={formData.skills.includes("Node.js")}
+                onChange={() => handleSkillChange("Node.js")}
+              />
+              {" "}Node.js
+            </label>
+
+            <label className="block">
+              <input
+                type="checkbox"
+                checked={formData.skills.includes("Python")}
+                onChange={() => handleSkillChange("Python")}
+              />
+              {" "}Python
+            </label>
+          </div>
+
+          <button className="w-full bg-blue-600 text-white py-2 rounded">
+            Register
+          </button>
+
+        </form>
+
+        {submittedData && (
+          <div className="mt-6 border-t pt-4">
+            <h2 className="font-bold mb-2">Submitted Data</h2>
+
+            <p>Name: {submittedData.name}</p>
+            <p>Email: {submittedData.email}</p>
+            <p>Password: {submittedData.password}</p>
+            <p>Gender: {submittedData.gender}</p>
+            <p>Department: {submittedData.department}</p>
+            <p>Skills: {submittedData.skills.join(", ")}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default RegistrationForm;
+
+
+
+
+
+popeup
+
+
+
+ {showPopup && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
+          <div className="bg-white p-8 rounded-lg shadow-xl w-96 text-center">
+
+            <h2 className="text-2xl font-bold text-green-600 mb-3">
+              ✅ Registration Successful
+            </h2>
+
+            <p className="text-gray-600 mb-6">
+              Student has been registered successfully.
+            </p>
+
+            <button
+              onClick={() => setShowPopup(false)}
+              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+            >
+              Back to Home
+            </button>
+
+          </div>
+        </div>
+      )}
+
+
+
+
+
+
+
+  CONCEPT                WHERE USED
+  ─────────────────────────────────────────────────────────────────────────
+  useState               Every field: name, email, password, etc.
+  Controlled inputs      value={name} + onChange={...} on every input
+  onChange               All inputs update state on every keystroke
+  onClick                Submit button, Reset button
+  onSubmit               <form onSubmit={handleSubmit}>
+  event.preventDefault() Inside handleSubmit to stop page reload
+  Functional update      setSkills((prev) => [...prev, skill])
+  Checkbox state (array) skills state + handleSkillChange function
+  Radio buttons          gender state with checked={gender === g}
+  Dropdown (select)      department state + options from array
+  map() for options      departments.map() for dropdown options
+  map() for checkboxes   allSkills.map() for checkbox list
+  Conditional rendering  {submitted ? <Success /> : <Form />}
+  Live preview           Right panel updates in real-time as user types
+  Basic validation       validate() function checks all fields before submit
+
+================================================================================
+                              📝 DAY 3 SUMMARY
+================================================================================
+
+  CONCEPT                    WHAT IT IS
+  ─────────────────────────────────────────────────────────────────────────
+  Events                     Things that happen in the browser (click, type)
+  Event Handler              A function that runs when an event fires
+  onClick                    Fires when user clicks an element
+  onChange                   Fires when input value changes (every keystroke)
+  onSubmit                   Fires when a form is submitted
+  Function Reference         onClick={fn} — correct, runs on event
+  Function Call              onClick={fn()} — wrong, runs immediately
+  Normal Variables           Don't trigger re-render when changed
+  useState                   React's way to store changeable data
+  State Update               setCount(newValue) — triggers re-render
+  Functional Update          setCount(prev => prev + 1) — safe update
+  Controlled Component       input with value={state} + onChange={setter}
+  event.target.value         The current value of a text input
+  event.target.checked       The current checked state of a checkbox
+  event.preventDefault()     Stops default browser behavior (form reload)
+  Object state update        setUser({ ...user, name: "Bob" })
+  Array state update         setItems([...items, newItem])
+  ─────────────────────────────────────────────────────────────────────────
+
+================================================================================
+                      🏠 HOMEWORK AFTER DAY 3
+================================================================================
+
+  BEGINNER:
+  1. Build a simple counter with +1, -1, and Reset buttons.
+  2. Build a "light switch" component — a button that toggles between
+     "💡 ON" and "🌑 OFF" with different background colors.
+
+  INTERMEDIATE:
+  3. Add a "Show Password" checkbox to the Registration Form that toggles
+     the password input between type="password" and type="text".
+  4. Add a character count display under the Name input:
+     "15 / 50 characters" — goes red when over the limit.
+
+  ADVANCED:
+  5. Add a live password strength indicator:
+     - Less than 6 chars → 🔴 Weak
+     - 6-9 chars → 🟡 Medium
+     - 10+ chars → 🟢 Strong
+  6. Save the submitted form data to an array and show a list of all
+     registered students below the form (like a student roster).
+
+================================================================================
+                    END OF DAY 3 - OUTSTANDING WORK! 🚀
+================================================================================
