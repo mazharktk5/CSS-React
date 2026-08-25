@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>DOM Counter</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px;
+            background: #f0f4ff;
+        }
+
+        h1 {
+            font-size: 80px;
+            margin: 0;
+            color: #4f46e5;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 14px 28px;
+            font-size: 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #decrement {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        #reset {
+            background: #e5e7eb;
+            color: #333;
+        }
+
+        #increment {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+    </style>
+</head>
+
+<body>
+
+    <p>Counter App</p>
+    <h1 id="count">0</h1>
+
+    <div class="buttons">
+        <button id="decrement">− Decrement</button>
+        <button id="reset">Reset</button>
+        <button id="increment">+ Increment</button>
+    </div>
+
+    <studentCard name="mazhar" id=2 />
+
+    <script>
+        // Step 1: Declare the counter variable
+        // let count = 0;
+        // // console.log("Initial count:", count);
+
+        // // Step 2: Select all elements ONCE and store in variables
+        // const countDisplay = document.getElementById("count");
+        // const incrementBtn = document.getElementById("increment");
+        // const decrementBtn = document.getElementById("decrement");
+        // const resetBtn = document.getElementById("reset");
+
+        // // Step 3: Add event listeners
+
+        // incrementBtn.addEventListener("click", function () {
+        //     count++;                              // increase count by 1
+        //     countDisplay.innerText = count;       // update the DOM
+        // });
+
+        // decrementBtn.addEventListener("click", function () {
+        //     count--;                              // decrease count by 1
+        //     countDisplay.innerText = count;       // update the DOM
+        // });
+
+        // resetBtn.addEventListener("click", function () {
+        //     count = 0;                            // reset to 0
+        //     countDisplay.innerText = count;       // update the DOM
+        // });
+
+        // const original = [1, 2, 3];
+
+        // console.log("original", original);
+
+        // const copy = [4, 5, 6, ...original];
+
+        // console.log("copy", copy);
+
+        // const numbers = [1, 2, 3, 4, 5];
+
+        // const double = numbers.map((num) => num * 2);
+        // console.log("double", double);
+        // console.log("numbers", numbers);
+
+
+        // const students = [
+        //     { id: 1, name: "Alice", score: 90 },
+        //     { id: 2, name: "Bob", score: 75 },
+        //     { id: 3, name: "Charlie", score: 85 },
+        // ];
+
+        // const studentNames = students.map((student) => student.name);
+        // console.log("studentNames", studentNames);
+
+
+        // const numbers = [1, 2, 3, 4, 5, 6, 7, 8];
+
+        // const evens = numbers.filter((n) => n % 2 === 0);
+        // console.log("evens", evens);
+        // console.log("numbers", numbers);
+
+
+        // const students = [
+        //     { id: 1, name: "Alice" },
+        //     { id: 2, name: "Bob" },
+        //     { id: 3, name: "Charlie" },
+        // ];
+
+        // const found = students.find((s) => s.id === 9);
+        // console.log(found);
+
+
+        // import PI, { E } from "./script.js";
+
+        // console.log("PI:", PI);
+        // console.log("E:", E);
+
+        // async function fetchStudents() {
+        //     try {
+        //         const response = await fetch("https://fakestoreapi.com/products");
+        //         const data = await response.json();
+        //         console.log(data);
+        //     } catch (error) {
+        //         console.error("Error:", error);
+        //     }
+        // }
+
+
+        // demonstrating asynchronous behavior with setTimeout
+
+
+
+
+
+        // const makeTea = () => {
+        //         console.log("Making tea...");
+        //     };
+
+        //     const makeSandwich = () => {
+        //         console.log("Making sandwich...");
+        //     };
+
+        //     const serveBreakfast = () => {
+        //         console.log("Serving breakfast...");
+        //     };
+
+        //     console.log("Restaurant Open");
+
+        //     makeTea();
+        //     makeSandwich();
+        //     serveBreakfast();
+
+        //     console.log("Restaurant Closed");
+
+
+
+        // const makeTea = () => {
+        //     console.log("Making tea...");
+        // };
+
+        // const bakePizza = () => {
+        //     console.log("Pizza is in the oven...");
+
+        //     setTimeout(() => {
+        //         console.log("Pizza is ready!");
+        //     }, 3000);
+        // };
+
+        // const makeCoffee = () => {
+        //     console.log("Making coffee...");
+        // };
+
+        // console.log("Restaurant Open");
+
+        // makeTea();
+        // bakePizza();
+        // makeCoffee();
+
+        // console.log("Restaurant Closed");
+
+
+
+        // now example of fecth api
+
+        // async function getProducts() {
+
+        //     console.log("Fetching products...");
+
+        //     const response = await fetch("https://fakestoreapi.com/products");
+        //     // console.log("Response received:", response);
+
+        //     const products = await response.json();
+
+        //     console.log(products);
+
+        // }
+
+        // getProducts();
+
+
+
+        // function placeOrder(callback) {
+        //     setTimeout(() => {
+        //         console.log("Order placed. Preparing your items...");
+        //         callback();
+
+        //     }, 2000);
+
+
+        // };
+
+
+
+
+        // function prepareItems(callback) {
+        //     setTimeout(() => {
+        //         console.log("Items prepared. Ready to serve!");
+        //         callback();
+        //     }, 4000);
+
+        // }
+
+        // function serveOrder(callback) {
+        //     setTimeout(() => {
+        //         console.log("Order served. Enjoy your meal!");
+        //         callback();
+        //     }, 1000);
+        // }
+
+
+
+        // function processOrder() {
+
+        //     placeOrder(() => {
+        //         prepareItems(() => {
+        //             serveOrder(() => {
+        //                 console.log("other operations processing ...");
+        //             });
+        //         });
+        //     });
+        // }
+
+        // processOrder();
+
+
+
+
+
+        // async await
+
+        // function placeOrder() {
+        //     return new Promise((resolve) => {
+
+        //         setTimeout(() => {
+        //             console.log("✅ Order placed. Preparing your items...");
+        //             resolve();
+        //         }, 2000);
+
+        //     });
+        // }
+
+        // function prepareItems() {
+        //     return new Promise((resolve) => {
+
+        //         setTimeout(() => {
+        //             console.log("🍔 Items prepared. Ready to serve!");
+        //             resolve();
+        //         }, 4000);
+
+        //     });
+        // }
+
+        // function serveOrder() {
+        //     return new Promise((resolve) => {
+
+        //         setTimeout(() => {
+        //             console.log("🍽️ Order served. Enjoy your meal!");
+        //             resolve();
+        //         }, 1000);
+
+        //     });
+        // }
+
+        // async function processOrder() {
+
+        //     console.log("Other operations processing...");
+
+        //     await placeOrder();
+
+        //     await prepareItems();
+
+        //     await serveOrder();
+
+        //     console.log("🎉 Order Completed!");
+
+        // }
+
+        // processOrder();
+
+
+
+
+    </script>
+
+    <!-- <script type="module" src="./script.js"> -->
+
+    <!-- </script> -->
+
+</body>
+
+</html>
